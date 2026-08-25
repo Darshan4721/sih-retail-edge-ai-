@@ -13,6 +13,9 @@ Supports:
 """
 
 import os
+os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
+os.environ["OPENCV_VIDEOIO_DEBUG"] = "0"
+
 import sys
 import io
 import csv
@@ -21,6 +24,7 @@ import math
 import json
 import socket
 import random
+import asyncio
 import platform
 import sqlite3
 import datetime
@@ -88,46 +92,49 @@ MAX_CAPACITY: Dict[str, Any] = {
 }
 
 
-def discover_camera(indices: Tuple[int, ...] = (0, 1, 2, 3), exclude_indices: Optional[Set[int]] = None) -> Tuple[Optional[cv2.VideoCapture], Optional[int], str]:
+CAMERA_PROBE_LOCK = threading.Lock()
+
+def discover_camera(indices: Tuple[int, ...] = (0, 1, 2), exclude_indices: Optional[Set[int]] = None) -> Tuple[Optional[cv2.VideoCapture], Optional[int], str]:
     """
     Hardware Abstraction Layer (HAL) Zero-Lag Camera Discovery:
     Probes camera indices across OS-appropriate backends (V4L2 for Linux, DSHOW/MSMF for Windows, AVFOUNDATION for macOS).
     Skips indices in `exclude_indices` so Cam 1 and Cam 2 bind to distinct hardware USB/integrated webcams.
     Sets cv2.CAP_PROP_BUFFERSIZE=1 to eliminate hardware buffer lag.
+    Guarded by CAMERA_PROBE_LOCK to prevent multi-threaded camera driver contention.
     """
     if exclude_indices is None:
         exclude_indices = set()
 
     system_name = platform.system().lower()
     if system_name == "linux":
-        backends = [("V4L2", cv2.CAP_V4L2), ("ANY", cv2.CAP_ANY)]
+        backends = [("V4L2", cv2.CAP_V4L2)]
     elif system_name == "windows":
-        backends = [("DSHOW", cv2.CAP_DSHOW), ("MSMF", cv2.CAP_MSMF), ("ANY", cv2.CAP_ANY)]
+        backends = [("DSHOW", cv2.CAP_DSHOW), ("MSMF", cv2.CAP_MSMF)]
     elif system_name == "darwin":
-        backends = [("AVFOUNDATION", cv2.CAP_AVFOUNDATION), ("ANY", cv2.CAP_ANY)]
+        backends = [("AVFOUNDATION", cv2.CAP_AVFOUNDATION)]
     else:
         backends = [("ANY", cv2.CAP_ANY)]
 
-    for idx in indices:
-        if idx in exclude_indices:
-            continue
-        for b_name, b_api in backends:
-            try:
-                cap = cv2.VideoCapture(idx, b_api)
-                if cap and cap.isOpened():
-                    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-                    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-                    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
-                    ret, frame = cap.read()
-                    if ret and frame is not None and frame.size > 0:
-                        print(f"[HAL Camera] Successfully attached physical camera at Index {idx} via {b_name} backend ({frame.shape[1]}x{frame.shape[0]}, Zero-Lag Buffer=1).")
-                        return cap, idx, b_name
-                    else:
-                        cap.release()
-            except Exception:
-                pass
+    with CAMERA_PROBE_LOCK:
+        for idx in indices:
+            if idx in exclude_indices:
+                continue
+            for b_name, b_api in backends:
+                try:
+                    cap = cv2.VideoCapture(idx, b_api)
+                    if cap and cap.isOpened():
+                        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+                        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+                        ret, frame = cap.read()
+                        if ret and frame is not None and frame.size > 0:
+                            print(f"[HAL Camera] Successfully attached physical camera at Index {idx} via {b_name} backend ({frame.shape[1]}x{frame.shape[0]}, Zero-Lag Buffer=1).")
+                            return cap, idx, b_name
+                        else:
+                            cap.release()
+                except Exception:
+                    pass
 
-    print("[HAL Camera] No physical camera returned valid frames. Operating in high-performance synthetic telemetry mode.")
     return None, None, "Synthetic"
 
 
@@ -181,9 +188,22 @@ def get_local_ip() -> str:
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-        return ip
+        if ip and not ip.startswith("127.") and not ip.startswith("169.254."):
+            return ip
     except Exception:
-        return "127.0.0.1"
+        pass
+
+    try:
+        for iface, addrs in psutil.net_if_addrs().items():
+            for addr in addrs:
+                if addr.family == socket.AF_INET:
+                    ip = addr.address
+                    if not ip.startswith("127.") and not ip.startswith("169.254."):
+                        return ip
+    except Exception:
+        pass
+
+    return "127.0.0.1"
 
 
 def ensure_ssl_certificates(ip_str: str = "127.0.0.1") -> Tuple[Optional[str], Optional[str]]:
@@ -214,6 +234,18 @@ def ensure_ssl_certificates(ip_str: str = "127.0.0.1") -> Tuple[Optional[str], O
         except Exception:
             pass
 
+        # Add all active local LAN IPv4 addresses to certificate SAN
+        try:
+            for iface, addrs in psutil.net_if_addrs().items():
+                for addr in addrs:
+                    if addr.family == socket.AF_INET and not addr.address.startswith("127."):
+                        try:
+                            alt_names.append(x509.IPAddress(ipaddress.IPv4Address(addr.address)))
+                        except Exception:
+                            pass
+        except Exception:
+            pass
+
         now = datetime.datetime.now(datetime.timezone.utc)
         cert = x509.CertificateBuilder().subject_name(
             subject
@@ -238,7 +270,6 @@ def ensure_ssl_certificates(ip_str: str = "127.0.0.1") -> Tuple[Optional[str], O
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
                 encryption_algorithm=serialization.NoEncryption(),
             ))
-
         with open(cert_file, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
@@ -2071,7 +2102,7 @@ async def websocket_live_metrics(websocket: WebSocket):
         while True:
             payload = engine.get_unified_metrics()
             await websocket.send_json(payload)
-            await time.sleep(0.2)
+            await asyncio.sleep(0.2)
     except WebSocketDisconnect:
         pass
     except Exception:

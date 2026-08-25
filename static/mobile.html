@@ -101,7 +101,7 @@
         </button>
 
         <p class="text-[10px] text-amber-400/80 font-mono">
-            * Note: When Chrome shows "Connection is not private", tap <u>Advanced</u> &rarr; <u>Proceed to 192.168.0.7</u>.
+            * Note: When Chrome shows "Connection is not private", tap <u>Advanced</u> &rarr; <u>Proceed to <span id="warning-host-label">host</span> (unsafe)</u>.
         </p>
     </div>
 
@@ -237,6 +237,8 @@
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${wsProtocol}//${window.location.host}/ws/mobile_upload`;
         document.getElementById('target-ip').innerText = wsUrl;
+        const hostLabel = document.getElementById('warning-host-label');
+        if (hostLabel) hostLabel.innerText = window.location.hostname;
 
         // 1. Initialize WebSocket Connection
         function connectWebSocket() {

@@ -756,12 +756,22 @@ async function initNetworkInfo() {
         if (!res.ok) throw new Error('Network info failed');
         networkInfo = await res.json();
 
-        const mobileUrlElem = document.getElementById('mobile-connect-url');
-        if (mobileUrlElem) {
-            mobileUrlElem.innerText = networkInfo.https_mobile_url || networkInfo.mobile_url;
+        const currentHost = window.location.hostname;
+        const currentPort = window.location.port || '8000';
+        
+        let targetHost = networkInfo.local_ip || 'localhost';
+        if (currentHost && currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+            targetHost = currentHost;
         }
 
-        renderQRCode(networkInfo.https_mobile_url || networkInfo.mobile_url);
+        const secureMobileUrl = `https://${targetHost}:${currentPort}/mobile_cam`;
+
+        const mobileUrlElem = document.getElementById('mobile-connect-url');
+        if (mobileUrlElem) {
+            mobileUrlElem.innerText = secureMobileUrl;
+        }
+
+        renderQRCode(secureMobileUrl);
     } catch (err) {
         console.warn('[Network Info Error]', err);
     }
@@ -780,9 +790,12 @@ function renderQRCode(url) {
 }
 
 function copyMobileUrl() {
-    const url = (networkInfo && (networkInfo.https_mobile_url || networkInfo.mobile_url)) || `https://${window.location.hostname}:8000/mobile_cam`;
+    const currentHost = window.location.hostname;
+    const currentPort = window.location.port || '8000';
+    let targetHost = (currentHost && currentHost !== 'localhost' && currentHost !== '127.0.0.1') ? currentHost : ((networkInfo && networkInfo.local_ip) || 'localhost');
+    const url = `https://${targetHost}:${currentPort}/mobile_cam`;
     navigator.clipboard.writeText(url);
-    alert('Copied Mobile Camera URL to clipboard!\n\n' + url);
+    showToastNotification('Copied Mobile Camera URL: ' + url, 'success');
 }
 
 async function fetchTelemetry() {
