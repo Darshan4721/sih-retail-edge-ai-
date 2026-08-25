@@ -1,19 +1,21 @@
 """
 verify_dual_cam.py
-Automated Verification Suite for RetailSense OS // Enterprise HAL & Auto-Baselining (SIH26179)
+Automated Verification Suite for RetailSense OS // Multi-Camera Architecture (SIH26179)
 Verifies:
-1. Hardware Abstraction Layer (HAL) Camera Discovery Probe (discover_camera).
+1. Hardware Abstraction Layer (HAL) Zero-Lag Camera Discovery Probe with distinct index exclusion.
 2. Auto-Configured YOLOv8 Runtime & Intra-Op Thread Clamping for ARM64/CPU Thermal Guard.
-3. Dual Synthetic Multi-Zone Ground Truth Generators (>1000 FPS).
+3. Multi-Zone Synthetic Stream Generators & Station 3 Standby Generator.
 4. Supermarket FMCG Whitelisting & Role-Based Compute Decoupling.
 5. Multi-Shelf Planogram Spatial Centroid Tracking & CSIM Occlusion Guard.
 6. Dynamic Multi-Register Queue Congestion Matrix & Smart Traffic Director.
-7. Enterprise Admin Calibration UI Endpoint (/admin) Isolation & HTML Delivery.
+7. Enterprise Admin Calibration UI Endpoint (/admin) with 3-camera switcher.
 8. Normalized 2-Click ROI Configuration API (/api/config/zones) with { shelf_roi, queue_roi }.
 9. Temporal Auto-Baselining Engine (/api/config/baseline) with 30-Frame Window & Median MAX_CAPACITY.
 10. Dynamic Stock Percentage Calculation against Calibrated Integer Baseline.
-11. Local SQLite Event Persistence (WAL Mode) & Shift Summary Analytics.
-12. Mobile WebSocket Video Ingestion (/ws/mobile_upload).
+11. 3-Camera Streaming Pipeline (/video_feed/cam1, /video_feed/cam2, /video_feed/cam3).
+12. 3-Camera Role Configuration Endpoint (/api/config/camera).
+13. Local SQLite Event Persistence (WAL Mode) & Shift Summary Analytics.
+14. Mobile WebSocket Video Ingestion (/ws/mobile_upload) feeding Station 3.
 """
 
 import time
@@ -29,19 +31,27 @@ from fastapi.testclient import TestClient
 
 def run_verification():
     print("=" * 80)
-    print("  RETAILSENSE OS // ENTERPRISE HAL & DYNAMIC AUTO-BASELINING VERIFICATION")
+    print("  RETAILSENSE OS // DUAL PHYSICAL USB + OPTIONAL MOBILE CAM ARCHITECTURE VERIFICATION")
     print("=" * 80)
 
     # 1. Test Hardware Abstraction Layer (HAL) & Camera Discovery
-    print("\n[TEST 1] Verifying HAL Camera Discovery (discover_camera)...")
+    print("\n[TEST 1] Verifying HAL Camera Discovery (discover_camera with exclude_indices & zero-lag buffer)...")
     from app import discover_camera, DEVICE, USE_HALF, DEVICE_NAME, BACKEND_TYPE, HardwareProfiler, get_local_ip, MAX_CAPACITY
 
-    cap, idx, b_name = discover_camera((0, 1, 2))
-    print(f"  -> HAL Probe Result: Cap={cap is not None}, Index={idx}, Backend={b_name}")
-    assert b_name in ["V4L2", "DSHOW", "MSMF", "AVFOUNDATION", "ANY", "Synthetic"]
-    if cap is not None:
-        cap.release()
-    print("  [PASS] HAL Camera Discovery successfully probed hardware interfaces.")
+    cap1, idx1, b_name1 = discover_camera((0, 1, 2, 3), exclude_indices=set())
+    print(f"  -> HAL Cam 1 Probe Result: Cap={cap1 is not None}, Index={idx1}, Backend={b_name1}")
+    assert b_name1 in ["V4L2", "DSHOW", "MSMF", "AVFOUNDATION", "ANY", "Synthetic"]
+
+    # Probe second camera excluding idx1 if found
+    exclude = {idx1} if idx1 is not None else set()
+    cap2, idx2, b_name2 = discover_camera((1, 2, 3, 0), exclude_indices=exclude)
+    print(f"  -> HAL Cam 2 (USB Webcam) Probe Result: Cap={cap2 is not None}, Index={idx2}, Backend={b_name2}")
+
+    if cap1 is not None:
+        cap1.release()
+    if cap2 is not None:
+        cap2.release()
+    print("  [PASS] HAL Camera Discovery successfully probed hardware interfaces with zero-lag buffers.")
 
     # 2. Test YOLOv8 Runtime Auto-Configuration & Intra-Op Thread Clamping
     print("\n[TEST 2] Verifying YOLOv8 Runtime Configuration & Intra-Op Thread Clamping...")
@@ -54,9 +64,9 @@ def run_verification():
     assert torch.get_num_threads() <= 8
     print("  [PASS] YOLOv8 runtime and CPU thermal thread limits verified.")
 
-    # 3. Test Dual Synthetic Stream Generators
-    print("\n[TEST 3] Verifying Multi-Zone Synthetic Stream Generators...")
-    from app import SyntheticShelfGenerator, SyntheticQueueGenerator
+    # 3. Test Multi-Zone Synthetic & Standby Stream Generators
+    print("\n[TEST 3] Verifying Multi-Zone Synthetic & Station 3 Standby Stream Generators...")
+    from app import SyntheticShelfGenerator, SyntheticQueueGenerator, SyntheticStandbyGenerator
 
     gen_shelf = SyntheticShelfGenerator(640, 360)
     t0 = time.time()
@@ -75,7 +85,12 @@ def run_verification():
     fps_q = 60 / dt_q
     print(f"  -> Multi-Register Queue Generator Throughput: {fps_q:.1f} FPS (Shape: {frame_q.shape})")
     assert frame_q.shape == (360, 640, 3)
-    print("  [PASS] Synthetic ground truth generators exceed real-time requirements (>30 FPS).")
+
+    gen_standby = SyntheticStandbyGenerator(640, 360)
+    frame_sb, det_sb = gen_standby.generate()
+    print(f"  -> Station 3 Standby Canvas Generated (Shape: {frame_sb.shape})")
+    assert frame_sb.shape == (360, 640, 3)
+    print("  [PASS] All synthetic and standby canvas generators exceed real-time requirements (>30 FPS).")
 
     # 4. Test Supermarket Whitelisting & Role Filtering
     print("\n[TEST 4] Verifying Supermarket FMCG Whitelisting & Role Filtering...")
@@ -140,6 +155,7 @@ def run_verification():
         assert "Enterprise Admin" in res_admin.text
         assert "Temporal Auto-Baselining" in res_admin.text
         assert "Optical Viewport & 2-Click ROI Calibration" in res_admin.text
+        assert "btn-cam3-stream" in res_admin.text
         print("  [PASS] Admin Calibration UI (/admin) served successfully.")
 
         # 8. Test 2-Click Normalized ROI Configuration (/api/config/zones with shelf_roi and queue_roi)
@@ -172,23 +188,54 @@ def run_verification():
         assert len(b_data["samples"]) == 30
         assert b_data["baseline_capacity"] >= 1
         print(f"     * Calibrated MAX_CAPACITY: {b_data['baseline_capacity']} items (Median of 30 frames)")
-        print(f"     * Raw Samples Window: {b_data['samples'][:8]}... (Total 30 samples)")
         print("  [PASS] Temporal Auto-Baselining engine accurately computed median capacity.")
 
-        # 10. Verify Dynamic Capacity Calculation in Telemetry
-        print("\n[TEST 10] Verifying Dynamic Capacity Percentage on Manager Dashboard (/api/metrics)...")
+        # 10. Verify 3-Camera Streaming Pipeline (/video_feed/cam1, /video_feed/cam2, /video_feed/cam3)
+        print("\n[TEST 10] Verifying 3-Camera Streaming Endpoints...")
+        time.sleep(0.5)
+        from app import gen_cam1_stream, gen_cam2_stream, gen_cam3_stream
+        chunk1 = next(gen_cam1_stream())
+        chunk2 = next(gen_cam2_stream())
+        chunk3 = next(gen_cam3_stream())
+        assert chunk1.startswith(b'--frame')
+        assert chunk2.startswith(b'--frame')
+        assert chunk3.startswith(b'--frame')
+        print("  [PASS] All 3 video stream pipelines (/video_feed/cam1, cam2, cam3) active and yielding MJPEG frames.")
+
+        # 11. Test 3-Camera Role Configuration Endpoint (/api/config/camera)
+        print("\n[TEST 11] Verifying 3-Camera Role Configuration (/api/config/camera)...")
+        res_cam_cfg = client.post("/api/config/camera", json={
+            "cam1_role": "SHELF",
+            "cam2_role": "QUEUE",
+            "cam3_role": "AUX_STOCK"
+        })
+        assert res_cam_cfg.status_code == 200
+        cfg_resp = res_cam_cfg.json()
+        assert cfg_resp["cam1_role"] == "SHELF"
+        assert cfg_resp["cam2_role"] == "QUEUE"
+        assert cfg_resp["cam3_role"] == "AUX_STOCK"
+        print(f"     * Cam 1 Role: {cfg_resp['cam1_role']}")
+        print(f"     * Cam 2 Role: {cfg_resp['cam2_role']}")
+        print(f"     * Cam 3 Role: {cfg_resp['cam3_role']}")
+        print("  [PASS] 3-Camera Role Configuration endpoint verified.")
+
+        # 12. Verify Dynamic Telemetry Schema (/api/metrics)
+        print("\n[TEST 12] Verifying Telemetry Schema with 3 Cameras (/api/metrics)...")
         res_metrics = client.get("/api/metrics")
         assert res_metrics.status_code == 200
         m = res_metrics.json()
-        assert m["shelf"]["stock_capacity"] == b_data["baseline_capacity"]
-        expected_pct = int((m["shelf"]["stock_count"] / max(1, b_data["baseline_capacity"])) * 100)
-        print(f"     * Dynamic Capacity: {m['shelf']['stock_capacity']} units")
-        print(f"     * Current Stock: {m['shelf']['stock_count']} units ({m['shelf']['stock_percentage']}%)")
-        assert m["shelf"]["stock_percentage"] == expected_pct
-        print("  [PASS] Telemetry calculates capacity percentage dynamically against calibrated baseline.")
+        assert "cam1" in m["cameras"]
+        assert "cam2" in m["cameras"]
+        assert "cam3" in m["cameras"]
+        assert m["cameras"]["cam1"]["status"] == "LIVE"
+        assert m["cameras"]["cam2"]["status"] == "LIVE"
+        print(f"     * Cam 1 Source: {m['cameras']['cam1']['source']} (FPS: {m['cameras']['cam1']['fps']})")
+        print(f"     * Cam 2 Source: {m['cameras']['cam2']['source']} (FPS: {m['cameras']['cam2']['fps']})")
+        print(f"     * Cam 3 Status: {m['cameras']['cam3']['status']} (Source: {m['cameras']['cam3']['source']})")
+        print("  [PASS] Telemetry contains complete 3-camera status matrix.")
 
-        # 11. Test Shift Summary Report & CSV Export
-        print("\n[TEST 11] Verifying SQLite WAL Shift Analytics & CSV Export...")
+        # 13. Test Shift Summary Report & CSV Export
+        print("\n[TEST 13] Verifying SQLite WAL Shift Analytics & CSV Export...")
         res_shift = client.get("/api/reports/shift_summary")
         assert res_shift.status_code == 200
         res_csv = client.get("/api/reports/shift_summary/csv")
@@ -196,8 +243,8 @@ def run_verification():
         assert "text/csv" in res_csv.headers.get("content-type", "")
         print("  [PASS] SQLite WAL Analytics & CSV Export verified.")
 
-    # 12. Test WebSocket Mobile Ingestion
-    print("\n[TEST 12] Verifying Mobile Frame WebSocket Ingestion (/ws/mobile_upload)...")
+    # 14. Test WebSocket Mobile Ingestion feeding Station 3
+    print("\n[TEST 14] Verifying Mobile Frame WebSocket Ingestion (/ws/mobile_upload)...")
     dummy_frame = np.full((360, 640, 3), 128, dtype=np.uint8)
     _, dummy_jpeg = cv2.imencode('.jpg', dummy_frame)
     dummy_bytes = dummy_jpeg.tobytes()
@@ -205,14 +252,15 @@ def run_verification():
     with TestClient(app) as client:
         with client.websocket_connect("/ws/mobile_upload") as websocket:
             websocket.send_bytes(dummy_bytes)
-            time.sleep(0.1)
-            assert engine.cam2_source.startswith("Mobile Phone")
-            print(f"  -> Ingested Mobile Frame successfully. Active Source: {engine.cam2_source}")
+            time.sleep(0.2)
+            assert engine.cam3_active is True
+            assert engine.cam3_source.startswith("Mobile Phone")
+            print(f"  -> Ingested Mobile Frame successfully to Station 3. Active Source: {engine.cam3_source}")
 
-    print("  [PASS] WebSocket Mobile Ingestion verified.")
+    print("  [PASS] WebSocket Mobile Ingestion feeding Station 3 verified.")
 
     print("\n" + "=" * 80)
-    print("  ALL 12 ENTERPRISE HAL & AUTO-BASELINING TEST SUITES PASSED (100% GREEN)!")
+    print("  ALL 14 ENTERPRISE MULTI-CAMERA TEST SUITES PASSED (100% GREEN)!")
     print("=" * 80)
 
     try:

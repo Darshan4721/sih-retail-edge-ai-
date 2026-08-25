@@ -121,7 +121,10 @@
                         Cam 01 (Shelf)
                     </button>
                     <button onclick="setCameraStream(2)" id="btn-cam2-stream" class="px-3 py-1.5 rounded-lg bg-surfaceInner text-slate-400 border border-white/[0.08] text-xs font-mono font-bold transition hover:text-white">
-                        Cam 02 (Queue)
+                        Cam 02 (USB Queue)
+                    </button>
+                    <button onclick="setCameraStream(3)" id="btn-cam3-stream" class="px-3 py-1.5 rounded-lg bg-surfaceInner text-slate-400 border border-white/[0.08] text-xs font-mono font-bold transition hover:text-white">
+                        Cam 03 (Mobile / Aux)
                     </button>
                 </div>
             </div>
@@ -363,12 +366,19 @@
             const img = document.getElementById('admin-video-stream');
             img.src = `/video_feed/cam${camId}`;
 
-            document.getElementById('btn-cam1-stream').className = camId === 1
+            const btn1 = document.getElementById('btn-cam1-stream');
+            if (btn1) btn1.className = camId === 1
                 ? 'px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 text-xs font-mono font-bold transition'
                 : 'px-3 py-1.5 rounded-lg bg-surfaceInner text-slate-400 border border-white/[0.08] text-xs font-mono font-bold transition hover:text-white';
 
-            document.getElementById('btn-cam2-stream').className = camId === 2
+            const btn2 = document.getElementById('btn-cam2-stream');
+            if (btn2) btn2.className = camId === 2
                 ? 'px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/60 text-xs font-mono font-bold transition'
+                : 'px-3 py-1.5 rounded-lg bg-surfaceInner text-slate-400 border border-white/[0.08] text-xs font-mono font-bold transition hover:text-white';
+
+            const btn3 = document.getElementById('btn-cam3-stream');
+            if (btn3) btn3.className = camId === 3
+                ? 'px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/60 text-xs font-mono font-bold transition'
                 : 'px-3 py-1.5 rounded-lg bg-surfaceInner text-slate-400 border border-white/[0.08] text-xs font-mono font-bold transition hover:text-white';
         }
 

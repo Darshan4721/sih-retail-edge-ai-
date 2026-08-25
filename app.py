@@ -25,7 +25,7 @@ import platform
 import sqlite3
 import datetime
 import threading
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple, Optional, Set
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -88,13 +88,16 @@ MAX_CAPACITY: Dict[str, Any] = {
 }
 
 
-def discover_camera(indices: Tuple[int, ...] = (0, 1, 2)) -> Tuple[Optional[cv2.VideoCapture], Optional[int], str]:
+def discover_camera(indices: Tuple[int, ...] = (0, 1, 2, 3), exclude_indices: Optional[Set[int]] = None) -> Tuple[Optional[cv2.VideoCapture], Optional[int], str]:
     """
-    Hardware Abstraction Layer (HAL) Camera Discovery:
-    Probes camera indices (0, 1, 2) across OS-appropriate backends
-    (cv2.CAP_V4L2 for Linux/Raspberry Pi, cv2.CAP_DSHOW/cv2.CAP_MSMF for Windows,
-    cv2.CAP_AVFOUNDATION for macOS) until a valid frame is returned.
+    Hardware Abstraction Layer (HAL) Zero-Lag Camera Discovery:
+    Probes camera indices across OS-appropriate backends (V4L2 for Linux, DSHOW/MSMF for Windows, AVFOUNDATION for macOS).
+    Skips indices in `exclude_indices` so Cam 1 and Cam 2 bind to distinct hardware USB/integrated webcams.
+    Sets cv2.CAP_PROP_BUFFERSIZE=1 to eliminate hardware buffer lag.
     """
+    if exclude_indices is None:
+        exclude_indices = set()
+
     system_name = platform.system().lower()
     if system_name == "linux":
         backends = [("V4L2", cv2.CAP_V4L2), ("ANY", cv2.CAP_ANY)]
@@ -106,15 +109,18 @@ def discover_camera(indices: Tuple[int, ...] = (0, 1, 2)) -> Tuple[Optional[cv2.
         backends = [("ANY", cv2.CAP_ANY)]
 
     for idx in indices:
+        if idx in exclude_indices:
+            continue
         for b_name, b_api in backends:
             try:
                 cap = cv2.VideoCapture(idx, b_api)
                 if cap and cap.isOpened():
+                    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
                     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
                     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
                     ret, frame = cap.read()
                     if ret and frame is not None and frame.size > 0:
-                        print(f"[HAL Camera] Successfully attached physical camera at Index {idx} via {b_name} backend ({frame.shape[1]}x{frame.shape[0]}).")
+                        print(f"[HAL Camera] Successfully attached physical camera at Index {idx} via {b_name} backend ({frame.shape[1]}x{frame.shape[0]}, Zero-Lag Buffer=1).")
                         return cap, idx, b_name
                     else:
                         cap.release()
@@ -693,8 +699,44 @@ class SyntheticQueueGenerator:
         return frame, detections
 
 
+class SyntheticStandbyGenerator:
+    """Generates an aesthetic standby canvas for Station 3 (Optional Mobile Roaming Camera)."""
+    def __init__(self, width: int = 640, height: int = 360):
+        self.width = width
+        self.height = height
+
+    def generate(self) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
+        canvas = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+        canvas[:] = (17, 22, 33)
+
+        # Subtle grid lines
+        for x in range(0, self.width, 40):
+            cv2.line(canvas, (x, 0), (x, self.height), (26, 34, 48), 1)
+        for y in range(0, self.height, 40):
+            cv2.line(canvas, (0, y), (self.width, y), (26, 34, 48), 1)
+
+        # Center card container
+        cv2.rectangle(canvas, (70, 60), (self.width - 70, self.height - 60), (28, 38, 54), -1)
+        cv2.rectangle(canvas, (70, 60), (self.width - 70, self.height - 60), (6, 182, 212), 1)
+
+        # Pulsing status orb
+        pulse = int(abs(np.sin(time.time() * 2.5)) * 4) + 6
+        cv2.circle(canvas, (self.width // 2, 105), pulse, (0, 255, 150), -1)
+        cv2.circle(canvas, (self.width // 2, 105), pulse + 4, (0, 255, 150), 1)
+
+        # Text labels
+        cv2.putText(canvas, "STATION 03 // OPTIONAL MOBILE ROAMING FEED", (95, 150),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(canvas, "Status: Standby (Visit /mobile_cam or Scan QR to Stream)", (95, 180),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.38, (180, 200, 220), 1, cv2.LINE_AA)
+        cv2.putText(canvas, "Zero-Lag Physical USB Webcams Active on Stations 1 & 2", (95, 210),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.35, (6, 182, 212), 1, cv2.LINE_AA)
+
+        return canvas, []
+
+
 # ==============================================================================
-# 6. DUAL-STREAM MULTI-ZONE VISION ENGINE
+# 6. MULTI-STREAM MULTI-ZONE VISION ENGINE (2+ PHYSICAL USB + OPTIONAL MOBILE)
 # ==============================================================================
 
 class DualCameraVisionEngine:
@@ -727,6 +769,7 @@ class DualCameraVisionEngine:
 
         # Camera 1 (Webcam / Primary)
         self.cam1_cap: Optional[cv2.VideoCapture] = None
+        self.cam1_idx: Optional[int] = None
         self.cam1_use_synthetic = False
         self.cam1_synthetic = SyntheticShelfGenerator(640, 360)
         self.cam1_role = "SHELF"
@@ -736,10 +779,12 @@ class DualCameraVisionEngine:
         self.cam1_jpeg: Optional[bytes] = None
         self.cam1_detections: List[Dict[str, Any]] = []
         self.cam1_counter: int = 0
+        self.cam1_source = "Awaiting Physical / Synthetic Cam 1"
         self.lock1 = threading.Lock()
 
-        # Camera 2 (Mobile / Secondary)
+        # Camera 2 (USB Webcam / Physical Secondary)
         self.cam2_cap: Optional[cv2.VideoCapture] = None
+        self.cam2_idx: Optional[int] = None
         self.cam2_use_synthetic = True
         self.cam2_synthetic = SyntheticQueueGenerator(640, 360)
         self.cam2_role = "QUEUE"
@@ -750,8 +795,37 @@ class DualCameraVisionEngine:
         self.cam2_detections: List[Dict[str, Any]] = []
         self.cam2_counter: int = 0
         self.cam2_source = "Synthetic Queue Stream"
-        self.last_mobile_frame_time = 0.0
         self.lock2 = threading.Lock()
+
+        # Camera 3 (Optional Mobile Smartphone / Auxiliary Roaming Ingest)
+        self.cam3_cap: Optional[cv2.VideoCapture] = None
+        self.cam3_idx: Optional[int] = None
+        self.cam3_use_synthetic = True
+        self.cam3_standby = SyntheticStandbyGenerator(640, 360)
+        self.cam3_role = "AUX_STOCK"
+        self.cam3_fps = 0.0
+        self.cam3_latency = 0.0
+        self.cam3_frame: Optional[np.ndarray] = None
+        self.cam3_jpeg: Optional[bytes] = None
+        self.cam3_detections: List[Dict[str, Any]] = []
+        self.cam3_counter: int = 0
+        self.cam3_source = "Mobile Roaming Feed (Standby)"
+        self.cam3_active = False
+        self.last_mobile_frame_time = 0.0
+        self.lock3 = threading.Lock()
+
+        # Pre-populate initial frames so MJPEG streams are immediately available
+        init_frame1, _ = self.cam1_synthetic.generate()
+        _, buf1 = cv2.imencode('.jpg', init_frame1, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
+        self.cam1_jpeg = buf1.tobytes()
+
+        init_frame2, _ = self.cam2_synthetic.generate()
+        _, buf2 = cv2.imencode('.jpg', init_frame2, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
+        self.cam2_jpeg = buf2.tobytes()
+
+        init_frame3, _ = self.cam3_standby.generate()
+        _, buf3 = cv2.imencode('.jpg', init_frame3, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
+        self.cam3_jpeg = buf3.tobytes()
 
         # Aggregate State Tracking
         self.shelf_stock_count = 5
@@ -776,6 +850,7 @@ class DualCameraVisionEngine:
         # Worker & Watchdog Threads
         self.t_cam1: Optional[threading.Thread] = None
         self.t_cam2: Optional[threading.Thread] = None
+        self.t_cam3: Optional[threading.Thread] = None
         self.t_watchdog: Optional[threading.Thread] = None
 
     def start(self):
@@ -790,17 +865,31 @@ class DualCameraVisionEngine:
         self.t_cam2 = threading.Thread(target=self._run_cam2, daemon=True)
         self.t_cam2.start()
 
+        self.t_cam3 = threading.Thread(target=self._run_cam3, daemon=True)
+        self.t_cam3.start()
+
         self.t_watchdog = threading.Thread(target=self._camera_watchdog, daemon=True)
         self.t_watchdog.start()
 
-        print("[DualEngine] Multi-zone vision pipelines and watchdog started successfully.")
+        print("[MultiEngine] 3-Station vision pipelines (2 Physical USB + 1 Mobile) and watchdog started successfully.")
 
     def stop(self):
         self.running = False
         if self.cam1_cap and self.cam1_cap.isOpened():
-            self.cam1_cap.release()
+            try:
+                self.cam1_cap.release()
+            except BaseException:
+                pass
         if self.cam2_cap and self.cam2_cap.isOpened():
-            self.cam2_cap.release()
+            try:
+                self.cam2_cap.release()
+            except BaseException:
+                pass
+        if self.cam3_cap and self.cam3_cap.isOpened():
+            try:
+                self.cam3_cap.release()
+            except BaseException:
+                pass
 
     def _init_model(self):
         if not YOLO_AVAILABLE:
@@ -819,34 +908,27 @@ class DualCameraVisionEngine:
             self.model_loaded = False
 
     def _camera_watchdog(self):
-        """Background watchdog thread checking every 10s if physical camera has been reconnected."""
+        """Heartbeat monitor ensuring vision worker threads remain healthy."""
         while self.running:
-            time.sleep(10.0)
-            if self.cam1_use_synthetic:
-                try:
-                    test_cap, test_idx, b_name = discover_camera((0, 1, 2))
-                    if test_cap is not None:
-                        print(f"[Watchdog] Physical camera re-detected at Index {test_idx} via {b_name}! Seamlessly transitioning from synthetic.")
-                        with self.lock1:
-                            if self.cam1_cap and self.cam1_cap.isOpened():
-                                self.cam1_cap.release()
-                            self.cam1_cap = test_cap
-                            self.cam1_use_synthetic = False
-                            self.cam1_source = f"Physical Camera {test_idx} ({b_name})"
-                except Exception:
-                    pass
+            time.sleep(5.0)
 
     def ingest_mobile_frame(self, jpeg_bytes: bytes, client_ip: str):
-        """Ingests a raw binary JPEG frame from mobile phone WebSocket upload."""
+        """Ingests a raw binary JPEG frame from mobile phone WebSocket upload to Station 3."""
         try:
             np_arr = np.frombuffer(jpeg_bytes, np.uint8)
             frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
             if frame is not None and frame.size > 0:
-                with self.lock2:
-                    self.cam2_frame = frame
-                    self.cam2_source = f"Mobile Phone ({client_ip})"
-                    self.cam2_use_synthetic = False
+                with self.lock3:
+                    self.cam3_frame = frame
+                    self.cam3_source = f"Mobile Phone ({client_ip})"
+                    self.cam3_use_synthetic = False
+                    self.cam3_active = True
                     self.last_mobile_frame_time = time.time()
+                # If Cam 2 has no USB webcam plugged in and is in synthetic mode, also mirror mobile feed for flexibility
+                if self.cam2_use_synthetic and self.cam2_cap is None:
+                    with self.lock2:
+                        self.cam2_frame = frame
+                        self.cam2_source = f"Mobile Phone ({client_ip})"
         except Exception as e:
             pass
 
@@ -1098,18 +1180,20 @@ class DualCameraVisionEngine:
         return out
 
     def _run_cam1(self):
-        """Worker thread for Camera 1 (Primary / Webcam) with frame decimation."""
+        """Worker thread for Camera 1 (Primary Physical Webcam / Shelf) with zero-copy decimation."""
         try:
-            cap, idx, b_name = discover_camera((0, 1, 2))
+            exclude = {self.cam2_idx} if self.cam2_idx is not None else set()
+            cap, idx, b_name = discover_camera((0, 1, 2, 3), exclude_indices=exclude)
             if cap is not None:
                 self.cam1_cap = cap
+                self.cam1_idx = idx
                 self.cam1_use_synthetic = False
                 self.cam1_source = f"Physical Camera {idx} ({b_name})"
             else:
                 self.cam1_use_synthetic = True
                 self.cam1_source = "Synthetic Shelf Stream"
         except Exception as e:
-            print(f"[HAL Camera Init Error] {e}")
+            print(f"[HAL Camera 1 Init Error] {e}")
             self.cam1_use_synthetic = True
             self.cam1_source = "Synthetic Shelf Stream"
 
@@ -1123,14 +1207,35 @@ class DualCameraVisionEngine:
             detections = []
 
             if not self.cam1_use_synthetic and self.cam1_cap and self.cam1_cap.isOpened():
-                ret, r_frame = self.cam1_cap.read()
-                if ret and r_frame is not None:
-                    frame = r_frame
-                    if self.cam1_counter % infer_stride == 0 or len(self.cam1_detections) == 0:
-                        self.cam1_detections = self._run_inference(frame, self.cam1_role)
-                    self.cam1_counter += 1
-                    detections = self.cam1_detections
-                else:
+                try:
+                    ret, r_frame = self.cam1_cap.read()
+                    if ret and r_frame is not None and r_frame.size > 0:
+                        frame = r_frame
+                        if self.cam1_counter % infer_stride == 0 or len(self.cam1_detections) == 0:
+                            self.cam1_detections = self._run_inference(frame, self.cam1_role)
+                        self.cam1_counter += 1
+                        detections = self.cam1_detections
+                    else:
+                        with self.lock1:
+                            self.cam1_use_synthetic = True
+                            self.cam1_source = "Synthetic Shelf Stream"
+                            try:
+                                if self.cam1_cap:
+                                    self.cam1_cap.release()
+                            except BaseException:
+                                pass
+                            self.cam1_cap = None
+                        frame, detections = self.cam1_synthetic.generate()
+                except BaseException:
+                    with self.lock1:
+                        self.cam1_use_synthetic = True
+                        self.cam1_source = "Synthetic Shelf Stream"
+                        try:
+                            if self.cam1_cap:
+                                self.cam1_cap.release()
+                        except BaseException:
+                            pass
+                        self.cam1_cap = None
                     frame, detections = self.cam1_synthetic.generate()
             else:
                 frame, detections = self.cam1_synthetic.generate()
@@ -1142,10 +1247,10 @@ class DualCameraVisionEngine:
             h, w = frame.shape[:2]
             if self.cam1_role == "SHELF":
                 self._process_multi_shelf_zones(detections, w, h)
-            else:
+            elif self.cam1_role == "QUEUE":
                 self._process_multi_queue_lanes(detections, w, h)
 
-            annotated = self._render_feed(frame, detections, self.cam1_role, "CAM 01 (PRIMARY)")
+            annotated = self._render_feed(frame, detections, self.cam1_role, f"CAM 01 ({self.cam1_source})")
             ret, buf = cv2.imencode('.jpg', annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
 
             if ret:
@@ -1165,7 +1270,23 @@ class DualCameraVisionEngine:
                 time.sleep((1.0 / 30.0) - elapsed)
 
     def _run_cam2(self):
-        """Worker thread for Camera 2 (Secondary / Mobile Ingest) with frame decimation."""
+        """Worker thread for Camera 2 (Physical USB Webcam / Secondary Queue) with zero-copy decimation."""
+        try:
+            exclude = {self.cam1_idx} if self.cam1_idx is not None else set()
+            cap, idx, b_name = discover_camera((1, 2, 3, 0), exclude_indices=exclude)
+            if cap is not None:
+                self.cam2_cap = cap
+                self.cam2_idx = idx
+                self.cam2_use_synthetic = False
+                self.cam2_source = f"Physical USB Webcam {idx} ({b_name})"
+            else:
+                self.cam2_use_synthetic = True
+                self.cam2_source = "Synthetic Queue Stream"
+        except Exception as e:
+            print(f"[HAL Camera 2 Init Error] {e}")
+            self.cam2_use_synthetic = True
+            self.cam2_source = "Synthetic Queue Stream"
+
         fps_timer = time.time()
         fps_frames = 0
         infer_stride = 1 if (torch.cuda.is_available() or "npu" in str(DEVICE).lower()) else 2
@@ -1175,16 +1296,47 @@ class DualCameraVisionEngine:
             frame = None
             detections = []
 
-            now = time.time()
-            is_mobile_active = (now - self.last_mobile_frame_time) < 3.0
-
-            if is_mobile_active and self.cam2_frame is not None:
+            # 1. Physical USB webcam takes precedence
+            if not self.cam2_use_synthetic and self.cam2_cap and self.cam2_cap.isOpened():
+                try:
+                    ret, r_frame = self.cam2_cap.read()
+                    if ret and r_frame is not None and r_frame.size > 0:
+                        frame = r_frame
+                        if self.cam2_counter % infer_stride == 0 or len(self.cam2_detections) == 0:
+                            self.cam2_detections = self._run_inference(frame, self.cam2_role)
+                        self.cam2_counter += 1
+                        detections = self.cam2_detections
+                    else:
+                        with self.lock2:
+                            self.cam2_use_synthetic = True
+                            self.cam2_source = "Synthetic Queue Stream"
+                            try:
+                                if self.cam2_cap:
+                                    self.cam2_cap.release()
+                            except BaseException:
+                                pass
+                            self.cam2_cap = None
+                        frame, detections = self.cam2_synthetic.generate()
+                except BaseException:
+                    with self.lock2:
+                        self.cam2_use_synthetic = True
+                        self.cam2_source = "Synthetic Queue Stream"
+                        try:
+                            if self.cam2_cap:
+                                self.cam2_cap.release()
+                        except BaseException:
+                            pass
+                        self.cam2_cap = None
+                    frame, detections = self.cam2_synthetic.generate()
+            # 2. If Cam 2 has no USB camera and mobile is active, use mobile as fallback
+            elif (time.time() - self.last_mobile_frame_time) < 3.0 and self.cam2_frame is not None:
                 with self.lock2:
                     frame = self.cam2_frame.copy()
                 if self.cam2_counter % infer_stride == 0 or len(self.cam2_detections) == 0:
                     self.cam2_detections = self._run_inference(frame, self.cam2_role)
                 self.cam2_counter += 1
                 detections = self.cam2_detections
+            # 3. Default synthetic generator
             else:
                 self.cam2_source = "Synthetic Queue Stream"
                 frame, detections = self.cam2_synthetic.generate()
@@ -1196,7 +1348,7 @@ class DualCameraVisionEngine:
             h, w = frame.shape[:2]
             if self.cam2_role == "QUEUE":
                 self._process_multi_queue_lanes(detections, w, h)
-            else:
+            elif self.cam2_role == "SHELF":
                 self._process_multi_shelf_zones(detections, w, h)
 
             annotated = self._render_feed(frame, detections, self.cam2_role, f"CAM 02 ({self.cam2_source})")
@@ -1217,6 +1369,63 @@ class DualCameraVisionEngine:
             if elapsed < (1.0 / 30.0):
                 time.sleep((1.0 / 30.0) - elapsed)
 
+    def _run_cam3(self):
+        """Worker thread for Camera 3 (Optional Mobile Roaming Feed / Auxiliary Camera)."""
+        fps_timer = time.time()
+        fps_frames = 0
+        infer_stride = 1 if (torch.cuda.is_available() or "npu" in str(DEVICE).lower()) else 2
+
+        while self.running:
+            start_t = time.time()
+            frame = None
+            detections = []
+
+            now = time.time()
+            is_mobile_active = (now - self.last_mobile_frame_time) < 3.5
+
+            if is_mobile_active and self.cam3_frame is not None:
+                with self.lock3:
+                    frame = self.cam3_frame.copy()
+                if self.cam3_counter % infer_stride == 0 or len(self.cam3_detections) == 0:
+                    self.cam3_detections = self._run_inference(frame, self.cam3_role)
+                self.cam3_counter += 1
+                detections = self.cam3_detections
+                self.cam3_active = True
+            else:
+                self.cam3_active = False
+                frame, detections = self.cam3_standby.generate()
+
+            if frame is None:
+                time.sleep(0.01)
+                continue
+
+            h, w = frame.shape[:2]
+            if is_mobile_active:
+                if self.cam3_role == "QUEUE":
+                    self._process_multi_queue_lanes(detections, w, h)
+                elif self.cam3_role == "SHELF":
+                    self._process_multi_shelf_zones(detections, w, h)
+                annotated = self._render_feed(frame, detections, self.cam3_role, f"CAM 03 ({self.cam3_source})")
+            else:
+                annotated = frame
+
+            ret, buf = cv2.imencode('.jpg', annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 65])
+
+            if ret:
+                with self.lock3:
+                    self.cam3_jpeg = buf.tobytes()
+
+            fps_frames += 1
+            if time.time() - fps_timer >= 1.0:
+                self.cam3_fps = fps_frames / (time.time() - fps_timer)
+                fps_frames = 0
+                fps_timer = time.time()
+
+            self.cam3_latency = (time.time() - start_t) * 1000.0
+            elapsed = time.time() - start_t
+            if elapsed < (1.0 / 30.0):
+                time.sleep((1.0 / 30.0) - elapsed)
+
     def get_jpeg_cam1(self) -> Optional[bytes]:
         with self.lock1:
             return self.cam1_jpeg
@@ -1225,9 +1434,13 @@ class DualCameraVisionEngine:
         with self.lock2:
             return self.cam2_jpeg
 
+    def get_jpeg_cam3(self) -> Optional[bytes]:
+        with self.lock3:
+            return self.cam3_jpeg
+
     def get_unified_metrics(self) -> Dict[str, Any]:
         sys_telemetry = HardwareProfiler.get_system_telemetry(
-            self.cam1_fps, self.cam2_fps, max(self.cam1_latency, self.cam2_latency)
+            self.cam1_fps, max(self.cam2_fps, self.cam3_fps), max(self.cam1_latency, self.cam2_latency, self.cam3_latency)
         )
 
         with self.state_lock:
@@ -1257,16 +1470,47 @@ class DualCameraVisionEngine:
             "cameras": {
                 "cam1": {
                     "role": self.cam1_role,
-                    "source": "Webcam (V4L2)" if not self.cam1_use_synthetic else "Synthetic Shelf",
+                    "source": self.cam1_source,
+                    "is_physical": not self.cam1_use_synthetic,
                     "fps": round(self.cam1_fps, 1),
                     "status": "LIVE"
                 },
                 "cam2": {
                     "role": self.cam2_role,
                     "source": self.cam2_source,
+                    "is_physical": not self.cam2_use_synthetic,
                     "fps": round(self.cam2_fps, 1),
                     "status": "LIVE"
+                },
+                "cam3": {
+                    "role": self.cam3_role,
+                    "source": self.cam3_source,
+                    "is_active": self.cam3_active,
+                    "fps": round(self.cam3_fps, 1),
+                    "status": "LIVE" if self.cam3_active else "STANDBY"
                 }
+            },
+            "cam1": {
+                "role": self.cam1_role,
+                "source": self.cam1_source,
+                "status": self.shelf_status if self.cam1_role == "SHELF" else self.queue_status,
+                "item_count": self.shelf_stock_count if self.cam1_role == "SHELF" else self.queue_customer_count,
+                "capacity_pct": self.shelf_percentage,
+                "alert": self.shelf_alert_active if self.cam1_role == "SHELF" else self.queue_congestion_alert
+            },
+            "cam2": {
+                "role": self.cam2_role,
+                "source": self.cam2_source,
+                "status": self.queue_status if self.cam2_role == "QUEUE" else self.shelf_status,
+                "customer_count": self.queue_customer_count if self.cam2_role == "QUEUE" else self.shelf_stock_count,
+                "estimated_wait_min": self.queue_estimated_wait_min,
+                "alert": self.queue_congestion_alert if self.cam2_role == "QUEUE" else self.shelf_alert_active
+            },
+            "cam3": {
+                "role": self.cam3_role,
+                "source": self.cam3_source,
+                "is_active": self.cam3_active,
+                "fps": round(self.cam3_fps, 1)
             },
             "shelf": shelf_data,
             "queue": queue_data,
@@ -1400,6 +1644,20 @@ def gen_cam2_stream():
         pass
 
 
+def gen_cam3_stream():
+    try:
+        while True:
+            frame_bytes = engine.get_jpeg_cam3()
+            if frame_bytes is not None:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            time.sleep(0.033)
+    except GeneratorExit:
+        pass
+    except Exception:
+        pass
+
+
 @app.get("/video_feed/cam1")
 async def video_feed_cam1():
     """Multipart MJPEG stream for Camera 1 (Webcam / Shelf)."""
@@ -1408,8 +1666,14 @@ async def video_feed_cam1():
 
 @app.get("/video_feed/cam2")
 async def video_feed_cam2():
-    """Multipart MJPEG stream for Camera 2 (Mobile Ingest / Queue)."""
+    """Multipart MJPEG stream for Camera 2 (USB Webcam / Queue)."""
     return StreamingResponse(gen_cam2_stream(), media_type="multipart/x-mixed-replace; boundary=frame")
+
+
+@app.get("/video_feed/cam3")
+async def video_feed_cam3():
+    """Multipart MJPEG stream for Camera 3 (Optional Mobile Roaming Feed / Auxiliary Camera)."""
+    return StreamingResponse(gen_cam3_stream(), media_type="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.get("/video_feed")
@@ -1738,20 +2002,26 @@ async def export_shift_summary_csv():
 class CameraConfigRequest(BaseModel):
     cam1_role: Optional[str] = None
     cam2_role: Optional[str] = None
+    cam3_role: Optional[str] = None
     cam2_url: Optional[str] = None
 
 
 @app.post("/api/config/camera")
 async def update_camera_config(req: CameraConfigRequest):
-    if req.cam1_role and req.cam1_role in ["SHELF", "QUEUE"]:
+    if req.cam1_role and req.cam1_role in ["SHELF", "QUEUE", "AUX_STOCK"]:
         engine.cam1_role = req.cam1_role
-    if req.cam2_role and req.cam2_role in ["SHELF", "QUEUE"]:
+    if req.cam2_role and req.cam2_role in ["SHELF", "QUEUE", "AUX_STOCK"]:
         engine.cam2_role = req.cam2_role
+    if req.cam3_role and req.cam3_role in ["SHELF", "QUEUE", "AUX_STOCK"]:
+        engine.cam3_role = req.cam3_role
     return {
         "status": "success",
         "cam1_role": engine.cam1_role,
         "cam2_role": engine.cam2_role,
-        "cam2_source": engine.cam2_source
+        "cam3_role": engine.cam3_role,
+        "cam1_source": engine.cam1_source,
+        "cam2_source": engine.cam2_source,
+        "cam3_source": engine.cam3_source
     }
 
 

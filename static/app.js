@@ -822,19 +822,41 @@ function updateDashboardView(data) {
         npuText.innerText = `${sys.inference_device || '⚡ NPU / DirectML Active'} (${sys.inference_latency_ms || 6.8}ms)`;
     }
 
-    // Camera FPS Badges
+    // Camera 1, 2, 3 Badges & Status Indicators
     const cam1Fps = document.getElementById('cam1-fps-badge');
-    if (cam1Fps) cam1Fps.innerText = `${sys.edge_fps_cam1 || 28.0} FPS`;
+    if (cam1Fps) cam1Fps.innerText = `${(cams.cam1 && cams.cam1.fps) || sys.edge_fps_cam1 || 30.0} FPS`;
 
     const cam2Fps = document.getElementById('cam2-fps-badge');
-    if (cam2Fps) cam2Fps.innerText = `${sys.edge_fps_cam2 || 28.0} FPS`;
+    if (cam2Fps) cam2Fps.innerText = `${(cams.cam2 && cams.cam2.fps) || sys.edge_fps_cam2 || 30.0} FPS`;
+
+    const cam3Fps = document.getElementById('cam3-fps-badge');
+    if (cam3Fps) cam3Fps.innerText = `${(cams.cam3 && cams.cam3.fps) || 0.0} FPS`;
+
+    const cam1SourceBadge = document.getElementById('cam1-source-badge');
+    if (cam1SourceBadge && cams.cam1) {
+        cam1SourceBadge.innerText = cams.cam1.is_physical ? 'Physical Webcam (Index 0)' : 'Synthetic Shelf Stream';
+    }
 
     const cam2SourceBadge = document.getElementById('cam2-source-badge');
     if (cam2SourceBadge && cams.cam2) {
-        cam2SourceBadge.innerText = cams.cam2.source.includes('Mobile') ? '📱 Mobile Phone Live' : '🖥️ Secondary Stream';
-        cam2SourceBadge.className = cams.cam2.source.includes('Mobile')
-            ? 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800/80'
-            : 'px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-white/[0.04] border border-white/[0.06]';
+        cam2SourceBadge.innerText = cams.cam2.is_physical ? 'Physical USB Webcam' : cams.cam2.source.includes('Mobile') ? '📱 Mobile Phone Live' : 'Secondary Stream';
+    }
+
+    const cam3SourceBadge = document.getElementById('cam3-source-badge');
+    const cam3PulseDot = document.getElementById('cam3-pulse-dot');
+    const cam3StatusPill = document.getElementById('cam3-status-pill');
+    if (cams.cam3) {
+        if (cams.cam3.is_active) {
+            if (cam3SourceBadge) cam3SourceBadge.innerText = '📱 Mobile Phone Connected';
+            if (cam3PulseDot) cam3PulseDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse';
+            if (cam3StatusPill) cam3StatusPill.innerText = 'MOBILE STREAM LIVE';
+            if (cam3Fps) cam3Fps.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 tabular-nums';
+        } else {
+            if (cam3SourceBadge) cam3SourceBadge.innerText = 'Roaming Feed / Standby';
+            if (cam3PulseDot) cam3PulseDot.className = 'w-1.5 h-1.5 rounded-full bg-slate-500';
+            if (cam3StatusPill) cam3StatusPill.innerText = 'MOBILE STANDBY';
+            if (cam3Fps) cam3Fps.className = 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800/80 tabular-nums';
+        }
     }
 
     // 2. Multi-Shelf Planogram Matrix Card
@@ -1051,6 +1073,7 @@ async function changeCameraRole(camId, newRole) {
     const payload = {};
     if (camId === 1) payload.cam1_role = newRole;
     if (camId === 2) payload.cam2_role = newRole;
+    if (camId === 3) payload.cam3_role = newRole;
 
     try {
         await fetch('/api/config/camera', {
@@ -1059,6 +1082,7 @@ async function changeCameraRole(camId, newRole) {
             body: JSON.stringify(payload)
         });
         soundManager.playAlertTone('normal');
+        showToastNotification(`Camera ${camId} role updated to ${newRole}`, 'success');
         console.log(`[Camera Config] Changed Cam ${camId} role to ${newRole}`);
     } catch (err) {
         console.error('[Config Error]', err);

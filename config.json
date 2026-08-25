@@ -63,11 +63,11 @@
         0.86
       ],
       "max_wait_threshold_min": 3.0,
-      "headcount": 1,
-      "est_wait_min": 1.5,
-      "status": "NORMAL_FLOW",
-      "badge": "\ud83d\udfe1 1 Shopper (~1.5m)",
-      "congested": false
+      "headcount": 2,
+      "est_wait_min": 3.0,
+      "status": "CONGESTED",
+      "badge": "\ud83d\udd34 Congested (2 Shoppers)",
+      "congested": true
     },
     {
       "id": "reg_2",
@@ -79,10 +79,10 @@
         0.85
       ],
       "max_wait_threshold_min": 3.0,
-      "headcount": 0,
-      "est_wait_min": 0.0,
-      "status": "FREE_AVAILABLE",
-      "badge": "\ud83d\udfe2 Open & Free",
+      "headcount": 1,
+      "est_wait_min": 1.5,
+      "status": "NORMAL_FLOW",
+      "badge": "\ud83d\udfe1 1 Shopper (~1.5m)",
       "congested": false
     },
     {
