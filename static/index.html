@@ -5,759 +5,940 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>RetailSense OS // EdgeRetail AI — Store Operations Console</title>
-    
-    <!-- Google Fonts: Plus Jakarta Sans + JetBrains Mono -->
+    <title>RetailSense OS — Autonomous Store Operations Center</title>
+
+    <!-- Google Fonts: Geist + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js for Business Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS with Exact Stitch Color System -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
         tailwind.config = {
-            darkMode: 'class',
+            darkMode: "class",
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
                     colors: {
-                        obsidian: '#080B11',
-                        surfaceCard: '#111622',
-                        surfaceInner: '#0B0F18',
-                        brand: {
-                            cyan: '#06B6D4',
-                            emerald: '#10B981',
-                            amber: '#F59E0B',
-                            crimson: '#F43F5E',
-                            indigo: '#6366F1',
-                        }
+                        background: "#131315",
+                        surface: "#131315",
+                        "surface-dim": "#131315",
+                        "surface-bright": "#39393b",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-container-low": "#1c1b1d",
+                        "surface-container": "#201f21",
+                        "surface-container-high": "#2a2a2c",
+                        "surface-container-highest": "#353437",
+                        "on-surface": "#e5e1e4",
+                        "on-surface-variant": "#bbc9cf",
+                        "on-background": "#e5e1e4",
+                        primary: "#a5e7ff",
+                        "primary-container": "#00d2ff",
+                        "on-primary": "#003543",
+                        "on-primary-container": "#00566a",
+                        "primary-fixed": "#b6ebff",
+                        "primary-fixed-dim": "#47d6ff",
+                        secondary: "#4edea3",
+                        "secondary-container": "#00a572",
+                        "on-secondary": "#003824",
+                        "on-secondary-container": "#00311f",
+                        tertiary: "#ffd6a7",
+                        "tertiary-container": "#ffb148",
+                        "on-tertiary": "#472a00",
+                        "on-tertiary-container": "#704500",
+                        error: "#ffb4ab",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        outline: "#859399",
+                        "outline-variant": "#3c494e"
+                    },
+                    fontFamily: {
+                        sans: ['"Geist"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
                     }
                 }
             }
         }
     </script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        :root {
-            --ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
         }
-        html {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
         }
-        body {
-            background-color: #080B11;
-            color: #F8FAFC;
-            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        
+        /* High-End Tech Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131315;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c494e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #859399;
+        }
+
+        .panel-border {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel {
+            background-color: #16161a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .ai-glow {
+            box-shadow: 0 0 16px rgba(0, 210, 255, 0.2);
+        }
+        .active-glow {
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.35);
+            border-color: #00d2ff;
+        }
+        .scanline-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.15) 50%,
+                rgba(0,0,0,0.15)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .tactile-btn {
+            transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease;
+        }
+        .tactile-btn:active {
+            transform: scale(0.96);
         }
         .tabular-nums {
             font-variant-numeric: tabular-nums;
         }
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #080B11;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1E2538;
-            border-radius: 4px;
-        }
-        /* Enterprise Glass Card */
-        .ops-kpi-card {
-            background: rgba(17, 22, 34, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(20px);
-            border-radius: 1.25rem;
-            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.65);
-            transition: border-color 200ms ease, box-shadow 200ms ease;
-        }
-        .ops-kpi-card:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-        .tactile-btn {
-            transition-property: transform, background-color, border-color, box-shadow;
-            transition-duration: 150ms;
-            transition-timing-function: var(--ease-spring);
-        }
-        .tactile-btn:active {
-            transform: scale(0.97);
-        }
-        /* Glow Accents */
-        .glow-red {
-            box-shadow: 0 0 30px -4px rgba(244, 63, 94, 0.4);
-            border-color: rgba(244, 63, 94, 0.6) !important;
-        }
-        .glow-amber {
-            box-shadow: 0 0 30px -4px rgba(245, 158, 11, 0.35);
-            border-color: rgba(245, 158, 11, 0.5) !important;
-        }
-        .glow-green {
-            box-shadow: 0 0 30px -4px rgba(16, 185, 129, 0.3);
-            border-color: rgba(16, 185, 129, 0.45) !important;
-        }
-        canvas.roi-interactive {
-            cursor: crosshair;
-        }
     </style>
 </head>
-<body class="min-h-screen bg-obsidian text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-black">
+<body class="bg-background text-on-surface font-sans antialiased overflow-hidden flex h-screen w-full selection:bg-primary-container selection:text-on-primary-container">
 
-    <!-- Ambient Illumination Backdrop -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute top-[-5%] left-1/4 w-[750px] h-[380px] bg-cyan-500/[0.04] rounded-full blur-[170px]"></div>
-        <div class="absolute bottom-[-5%] right-1/4 w-[650px] h-[380px] bg-indigo-500/[0.04] rounded-full blur-[180px]"></div>
-    </div>
-
-    <!-- MAIN CONTAINER -->
-    <div class="relative z-10 max-w-[1780px] mx-auto p-4 lg:p-6 space-y-5">
-
-        <!-- A. EXECUTIVE HEADER BAR -->
-        <header class="flex flex-wrap items-center justify-between gap-4 ops-kpi-card px-6 py-4">
-            
-            <!-- Left: Branding & Status -->
-            <div class="flex items-center gap-4">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 ring-1 ring-white/20 shrink-0">
-                    <i data-lucide="layers" class="w-6 h-6 text-white"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-base font-extrabold tracking-tight text-white flex items-center gap-2">
-                            RetailSense OS <span class="text-cyan-400 font-mono text-xs font-bold">// EdgeRetail AI</span>
-                        </h1>
-                        <span class="text-xs text-slate-400 font-normal">• Store #104</span>
-                        <div id="system-status-pill" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-700/60">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            ALL SYSTEMS OPTIMAL
-                        </div>
-                        <div id="npu-status-pill" class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-700/60 shadow-sm">
-                            <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i>
-                            <span id="npu-status-text">⚡ NPU / Hardware Engine</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-400 font-normal mt-0.5">Multi-Shelf Planograms, Multi-Register Traffic Matrix & On-Device NPU Acceleration</p>
-                </div>
-            </div>
-
-            <!-- Right: Action Buttons & Navigation -->
-            <div class="flex flex-wrap items-center gap-3">
-                
-                <!-- Audio Mute / Unmute Toggle -->
-                <button id="audio-toggle-btn" onclick="toggleAudioChimes()" title="Toggle Dispatch Sound Chimes" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surfaceInner hover:bg-slate-800 border border-white/[0.08] text-xs font-mono font-bold text-slate-200 transition tactile-btn">
-                    <i data-lucide="volume-2" id="audio-toggle-icon" class="w-4 h-4 text-emerald-400"></i>
-                    <span id="audio-toggle-label">Audio: On</span>
-                </button>
-
-                <!-- Daily Shift Report Modal Button -->
-                <button onclick="openShiftSummaryModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-600/60 text-xs font-bold text-emerald-200 transition tactile-btn shadow-md shadow-emerald-950/30">
-                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-400"></i>
-                    <span>Daily Shift Report</span>
-                </button>
-
-                <!-- Connect Mobile Phone Button -->
-                <button onclick="toggleMobileModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-xs font-bold text-cyan-200 transition tactile-btn shadow-md shadow-cyan-950/30">
-                    <i data-lucide="smartphone" class="w-4 h-4 text-cyan-400"></i>
-                    <span>Connect Phone Ingest</span>
-                </button>
-
-                <!-- Engineering Telemetry Drawer Toggle -->
-                <button onclick="toggleEngineeringDrawer()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surfaceInner hover:bg-slate-800 border border-white/[0.08] text-xs font-mono font-bold text-slate-200 transition tactile-btn">
-                    <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Engineering Specs ⚡</span>
-                </button>
-
-                <!-- Admin Console Link -->
-                <a href="/admin" class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-600/60 text-xs font-bold text-cyan-200 transition tactile-btn shadow-md shadow-cyan-950/40">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
-                    <span>Admin Calibration</span>
-                </a>
-
-                <!-- Pitch Deck Link -->
-                <a href="/presentation" class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-600/60 text-xs font-bold text-indigo-200 transition tactile-btn shadow-md shadow-indigo-950/40">
-                    <i data-lucide="presentation" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Pitch Deck</span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-indigo-300 transition-transform group-hover:translate-x-0.5"></i>
-                </a>
-
-            </div>
-
-        </header>
-
-        <!-- B. EXECUTIVE TOP ROW: ACTIONABLE RETAIL KPI CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-            <!-- 1. Multi-Shelf Planogram Matrix Card -->
-            <div id="shelf-kpi-card" class="ops-kpi-card p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 rounded-xl bg-cyan-950/80 text-cyan-400 border border-cyan-800/50">
-                            <i data-lucide="package" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xs font-mono font-bold uppercase tracking-wide text-slate-200">Multi-Shelf Planograms</h2>
-                            <p class="text-[11px] text-slate-400">Beverages & Packaged Goods Sections</p>
-                        </div>
-                    </div>
-                    <span id="shelf-status-pill" class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">
-                        🟢 Inventory Healthy
-                    </span>
-                </div>
-
-                <!-- Dynamic Multi-Tier Shelf Sections Grid -->
-                <div id="multi-shelf-sections-container" class="space-y-2.5">
-                    <!-- Populated dynamically via app.js -->
-                </div>
-
-                <!-- Live Transactional Delta Badge -->
-                <div class="pt-2 border-t border-white/[0.04] flex items-center justify-between text-xs font-mono">
-                    <span class="text-slate-400 text-[11px]">Latest Inventory Action:</span>
-                    <span id="shelf-last-transaction" class="font-bold text-emerald-300 text-[11px] truncate">🟢 Initial Stock Synchronized</span>
-                </div>
-            </div>
-
-            <!-- 2. Multi-Register Queue Operations Card -->
-            <div id="queue-kpi-card" class="ops-kpi-card p-5 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 rounded-xl bg-amber-950/80 text-amber-400 border border-amber-800/50">
-                            <i data-lucide="users" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xs font-mono font-bold uppercase tracking-wide text-slate-200">Multi-Register Checkout Traffic</h2>
-                            <p class="text-[11px] text-slate-400">Dual POS Counters & Smart Traffic Director</p>
-                        </div>
-                    </div>
-                    <span id="queue-status-pill" class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-emerald-950/80 text-emerald-300 border border-emerald-800/80">
-                        🟢 Registers Flowing Smoothly
-                    </span>
-                </div>
-
-                <!-- Dynamic Multi-Register Grid -->
-                <div id="multi-queue-lanes-container" class="grid grid-cols-2 gap-3 pt-1">
-                    <!-- Populated dynamically via app.js -->
-                </div>
-
-                <!-- Smart Traffic Director Recommendation Banner -->
-                <div id="smart-traffic-banner" class="p-3 rounded-xl bg-cyan-950/70 border border-cyan-700/60 text-xs font-mono text-cyan-200 flex items-center gap-2.5 shadow-sm">
-                    <i data-lucide="compass" class="w-4 h-4 text-cyan-400 shrink-0"></i>
-                    <span id="smart-traffic-text" class="font-bold">🟢 All checkout registers are flowing smoothly.</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- C. CENTER STAGE: DUAL VIDEO MONITORING GRID -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-        <!-- C. LIVE MULTI-CAMERA MONITORING MATRIX (2 Always-On Physical USB + Optional 3rd Mobile Ingest) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-
-            <!-- Station 1: Camera 1 (Primary Physical Webcam / Shelf) -->
-            <div class="ops-kpi-card p-4 space-y-3 border-t-2 border-cyan-500">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="camera" class="w-4 h-4 text-cyan-400"></i>
-                        <div>
-                            <span class="text-xs font-bold text-white font-mono uppercase block">Station 01 // Physical Cam 1</span>
-                            <span id="cam1-source-badge" class="text-[10px] font-mono text-cyan-300">Webcam (Index 0)</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="openCalibrationModal(1)" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-600/50 text-[11px] font-mono text-cyan-300 transition tactile-btn shadow">
-                            <i data-lucide="crosshair" class="w-3 h-3"></i> Calibrate
-                        </button>
-                        <select onchange="changeCameraRole(1, this.value)" class="bg-surfaceInner border border-white/10 text-xs font-mono text-cyan-300 rounded-lg px-2 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer">
-                            <option value="SHELF" selected>🛍️ Shelf</option>
-                            <option value="QUEUE">💳 Queue</option>
-                        </select>
-                        <span id="cam1-fps-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 tabular-nums">30.0 FPS</span>
-                    </div>
-                </div>
-
-                <div class="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-white/[0.04] flex items-center justify-center">
-                    <img id="video-stream-cam1" src="/video_feed/cam1" alt="Primary Camera Stream" class="w-full h-full object-contain" />
-                    <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-cyan-300 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="cam1-status-pill">PHYSICAL CAM 1 • ZERO-LAG</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Station 2: Camera 2 (Physical USB Webcam / Queue) -->
-            <div class="ops-kpi-card p-4 space-y-3 border-t-2 border-amber-500">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="usb" class="w-4 h-4 text-amber-400"></i>
-                        <div>
-                            <span class="text-xs font-bold text-white font-mono uppercase block">Station 02 // USB Webcam</span>
-                            <span id="cam2-source-badge" class="text-[10px] font-mono text-amber-300">USB Webcam (Index 1)</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="openCalibrationModal(2)" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 border border-amber-600/50 text-[11px] font-mono text-amber-300 transition tactile-btn shadow">
-                            <i data-lucide="crosshair" class="w-3 h-3"></i> Calibrate
-                        </button>
-                        <select onchange="changeCameraRole(2, this.value)" class="bg-surfaceInner border border-white/10 text-xs font-mono text-amber-300 rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500 cursor-pointer">
-                            <option value="QUEUE" selected>💳 Queue</option>
-                            <option value="SHELF">🛍️ Shelf</option>
-                        </select>
-                        <span id="cam2-fps-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 tabular-nums">30.0 FPS</span>
-                    </div>
-                </div>
-
-                <div class="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-white/[0.04] flex items-center justify-center">
-                    <img id="video-stream-cam2" src="/video_feed/cam2" alt="Secondary Camera Stream" class="w-full h-full object-contain" />
-                    <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-amber-300 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="cam2-status-pill">PHYSICAL USB 2 • ZERO-LAG</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Station 3: Camera 3 (Optional Mobile Roaming / Aux Camera) -->
-            <div class="ops-kpi-card p-4 space-y-3 border-t-2 border-indigo-500 md:col-span-2 xl:col-span-1">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="smartphone" class="w-4 h-4 text-indigo-400"></i>
-                        <div>
-                            <span class="text-xs font-bold text-white font-mono uppercase block">Station 03 // Mobile (Optional)</span>
-                            <span id="cam3-source-badge" class="text-[10px] font-mono text-indigo-300">Roaming Feed / Standby</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="toggleMobileModal()" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-600/50 text-[11px] font-mono text-indigo-300 transition tactile-btn shadow">
-                            <i data-lucide="qr-code" class="w-3 h-3"></i> Connect
-                        </button>
-                        <select onchange="changeCameraRole(3, this.value)" class="bg-surfaceInner border border-white/10 text-xs font-mono text-indigo-300 rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer">
-                            <option value="AUX_STOCK" selected>📦 Aux Stock</option>
-                            <option value="QUEUE">💳 Queue</option>
-                            <option value="SHELF">🛍️ Shelf</option>
-                        </select>
-                        <span id="cam3-fps-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800/80 tabular-nums">0.0 FPS</span>
-                    </div>
-                </div>
-
-                <div class="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-white/[0.04] flex items-center justify-center">
-                    <img id="video-stream-cam3" src="/video_feed/cam3" alt="Station 3 Camera Stream" class="w-full h-full object-contain" />
-                    <div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-indigo-300 flex items-center gap-1.5">
-                        <span id="cam3-pulse-dot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                        <span id="cam3-status-pill">MOBILE STANDBY</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- D. BOTTOM SECTION: ONE-CLICK DEMO TESTER & LIVE STAFF ACTION FEED -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-            <!-- One-Click Scenario Demonstrator (5 Cols) -->
-            <div class="lg:col-span-5 ops-kpi-card p-5 space-y-3">
-                <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                    <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                        <i data-lucide="play-circle" class="w-4 h-4 text-cyan-400"></i> One-Click Scenario Demonstrator
-                    </h3>
-                    <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">Evaluation Controls</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                    <!-- Normal Store Flow -->
-                    <button onclick="setScenario('AUTO_CYCLE')" class="p-3 rounded-xl text-left bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/50 transition tactile-btn">
-                        <div class="text-xs font-bold text-cyan-300">🟢 Normal Flow</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Stock full, 0 queue</div>
-                    </button>
-
-                    <!-- Customer Browsing -->
-                    <button onclick="setScenario('CUSTOMER_OCCLUSION')" class="p-3 rounded-xl text-left bg-surfaceInner hover:bg-amber-950/40 border border-white/[0.06] hover:border-amber-500/50 transition tactile-btn">
-                        <div class="text-xs font-bold text-amber-300">🟡 Customer Browsing</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">Alarms suppressed</div>
-                    </button>
-
-                    <!-- Empty Shelf -->
-                    <button onclick="setScenario('RESTOCK_EMPTY')" class="p-3 rounded-xl text-left bg-surfaceInner hover:bg-red-950/40 border border-white/[0.06] hover:border-red-500/50 transition tactile-btn">
-                        <div class="text-xs font-bold text-red-300">🔴 Empty Shelf</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">2.0s Debounce alarm</div>
-                    </button>
-
-                    <!-- Queue Jam -->
-                    <button onclick="setScenario('QUEUE_CONGESTION')" class="p-3 rounded-xl text-left bg-surfaceInner hover:bg-purple-950/40 border border-white/[0.06] hover:border-purple-500/50 transition tactile-btn">
-                        <div class="text-xs font-bold text-purple-300">🚨 Queue Jam</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5 font-mono">&ge;2 in queue &rarr; R2 Alert</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Live Staff Action Feed (7 Cols) -->
-            <div class="lg:col-span-7 ops-kpi-card p-5 space-y-3">
-                <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="bell" class="w-4 h-4 text-cyan-400"></i>
-                        <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
-                            Live Staff Action Feed (SQLite Incidents Log)
-                        </h3>
-                        <span id="unread-alert-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">1</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleAudioChimes()" id="feed-audio-toggle-btn" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surfaceInner hover:bg-slate-800 border border-white/[0.08] text-[10px] font-mono font-bold text-slate-200 transition">
-                            <i data-lucide="volume-2" id="feed-audio-toggle-icon" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span id="feed-audio-toggle-label">Mute Sounds</span>
-                        </button>
-                        <button onclick="clearAlertFeed()" class="text-[10px] font-mono text-slate-500 hover:text-slate-300 transition">Clear</button>
-                    </div>
-                </div>
-
-                <div id="staff-alert-feed" class="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-                    <div class="p-3 rounded-xl border border-white/[0.06] bg-surfaceInner space-y-1">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> SYSTEM INITIALIZED
-                            </span>
-                            <span class="text-[10px] font-mono text-slate-500">Live</span>
-                        </div>
-                        <p class="text-xs font-sans text-slate-300 leading-snug">
-                            Dual-stream vision pipeline active with SQLite WAL storage & 0.0 KB/s Cloud Uplink.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- E. COLLAPSIBLE QUALCOMM & EDGE SILICON TELEMETRY DRAWER -->
-    <div id="drawer-overlay" onclick="toggleEngineeringDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300"></div>
-
-    <aside id="telemetry-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-[#0C101A] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] p-6 overflow-y-auto space-y-6 shadow-2xl">
+    <!-- ============================================================================== -->
+    <!-- 1. PERSISTENT LEFT SIDEBAR NAVIGATION (DOCK) -->
+    <!-- ============================================================================== -->
+    <aside class="fixed left-0 top-0 h-full w-[240px] z-30 bg-surface-container-low border-r border-outline-variant/20 flex flex-col py-5 px-3 transition-all duration-200">
         
-        <div class="flex items-center justify-between border-b border-white/[0.08] pb-4">
-            <div class="flex items-center gap-2.5">
-                <div class="p-2 rounded-xl bg-indigo-950 text-indigo-400 border border-indigo-800/60">
-                    <i data-lucide="cpu" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h2 class="text-sm font-bold text-white uppercase font-mono">Qualcomm® & Edge Specs</h2>
-                    <p class="text-xs text-slate-400">Engineering Telemetry for Judges</p>
-                </div>
+        <!-- Brand / Store Identifier -->
+        <div class="px-3 mb-6 flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#00d2ff]"></span>
+                <h1 class="font-bold text-lg text-primary tracking-tight">RetailSense OS</h1>
             </div>
-            <button onclick="toggleEngineeringDrawer()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 transition">
-                <i data-lucide="x" class="w-4 h-4"></i>
+            <div class="flex items-center justify-between mt-1">
+                <span class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">STORE #104</span>
+                <span id="hardware-engine-badge" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-primary-container/10 text-primary border border-primary/30">NPU READY</span>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 flex flex-col gap-1.5">
+            <!-- 1. Overview -->
+            <button id="side-nav-overview" onclick="switchTab('overview')" class="side-nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-primary font-bold bg-primary/10 border-r-2 border-primary transition-colors duration-200 text-left">
+                <span class="material-symbols-outlined text-[20px] fill">dashboard</span>
+                <span class="text-sm">Overview</span>
+            </button>
+
+            <!-- 2. Live Monitoring -->
+            <button id="side-nav-monitoring" onclick="switchTab('monitoring')" class="side-nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200 text-left">
+                <span class="material-symbols-outlined text-[20px]">videocam</span>
+                <span class="text-sm font-medium">Live Monitoring</span>
+            </button>
+
+            <!-- 3. Database & Matrix -->
+            <button id="side-nav-matrix" onclick="switchTab('matrix')" class="side-nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200 text-left">
+                <span class="material-symbols-outlined text-[20px]">database</span>
+                <span class="text-sm font-medium">Live Matrix</span>
+            </button>
+
+            <!-- 4. Configuration -->
+            <button id="side-nav-config" onclick="switchTab('config')" class="side-nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200 text-left">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span class="text-sm font-medium">Configuration</span>
+            </button>
+
+            <!-- 5. Analytics -->
+            <button id="side-nav-analytics" onclick="switchTab('analytics')" class="side-nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200 text-left">
+                <span class="material-symbols-outlined text-[20px]">analytics</span>
+                <span class="text-sm font-medium">Analytics</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Footer Status -->
+        <div class="mt-auto pt-4 border-t border-outline-variant/20 space-y-3">
+            <div class="px-3 py-2 rounded-lg bg-surface-container border border-outline-variant/30 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                    <span class="font-mono text-xs text-secondary font-bold">Edge AI Active</span>
+                </div>
+                <span id="global-fps-pill" class="font-mono text-[11px] text-on-surface-variant tabular-nums">28.4 FPS</span>
+            </div>
+
+            <!-- Audio Alert Mute Toggle -->
+            <button id="audio-toggle-btn" onclick="toggleAudioChimes()" class="w-full py-2 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 font-mono text-xs text-on-surface flex items-center justify-center gap-2 tactile-btn">
+                <i data-lucide="volume-2" id="audio-toggle-icon" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span id="audio-toggle-label">Audio: On</span>
             </button>
         </div>
-
-        <!-- Silicon Profile -->
-        <div class="space-y-3 font-mono text-xs">
-            <div class="p-4 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-2">
-                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Silicon Platform</span>
-                <p class="text-sm font-bold text-white">Qualcomm® QCS6490 / RB3 Gen 2</p>
-                <p class="text-[11px] text-slate-400 font-sans">Compatible with Raspberry Pi 5 & NVIDIA Edge Gateways</p>
-            </div>
-
-            <!-- Active Inference Engine -->
-            <div class="p-4 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-2">
-                <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Inference Hardware</span>
-                <p id="drawer-device" class="text-sm font-bold text-cyan-300 tabular-nums">CUDA:0 (FP16 Accelerated)</p>
-                <div class="flex justify-between text-slate-400 pt-1">
-                    <span>Inference Latency:</span>
-                    <span id="drawer-latency" class="text-emerald-400 font-bold tabular-nums">7.4 ms</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>Dual Throughput:</span>
-                    <span id="drawer-throughput" class="text-cyan-300 font-bold tabular-nums">58.0 FPS Total</span>
-                </div>
-            </div>
-
-            <!-- Thermals & Load -->
-            <div class="p-4 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-2">
-                <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Edge Thermals & Load</span>
-                <div class="flex justify-between text-slate-400">
-                    <span>SoC Core Temp:</span>
-                    <span id="drawer-temp" class="text-amber-300 font-bold tabular-nums">51.2°C</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>CPU Core Load:</span>
-                    <span id="drawer-cpu" class="text-slate-200 font-bold tabular-nums">28.4%</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>DMA Memory:</span>
-                    <span id="drawer-ram" class="text-slate-200 font-bold tabular-nums">1240 / 8192 MB</span>
-                </div>
-            </div>
-
-            <!-- Zero-Cloud Compliance -->
-            <div class="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 space-y-2 text-emerald-300">
-                <span class="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> DPDP Act 2023 Verified
-                </span>
-                <p class="text-xs font-sans text-emerald-200">
-                    Zero raw video frames or biometric embeddings are transmitted externally.
-                </p>
-                <div class="flex justify-between pt-1 text-slate-300">
-                    <span>Cloud Egress:</span>
-                    <span class="font-bold text-emerald-400 tabular-nums">0.00 KB/s (100% Edge Offline)</span>
-                </div>
-            </div>
-        </div>
-
-        <button onclick="toggleEngineeringDrawer()" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow-lg">
-            Close Engineering Telemetry
-        </button>
-
     </aside>
 
-    <!-- F. MOBILE CONNECT MODAL (QR CODE & URL) -->
-    <div id="mobile-connect-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="ops-kpi-card max-w-md w-full p-6 space-y-5 border border-white/10 shadow-2xl">
-            
-            <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="p-2 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800/60">
-                        <i data-lucide="smartphone" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-white">Connect Smartphone Camera</h3>
-                        <p class="text-xs text-slate-400">Stream phone camera over local Wi-Fi</p>
-                    </div>
-                </div>
-                <button onclick="toggleMobileModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
+    <!-- ============================================================================== -->
+    <!-- 2. MAIN VIEWPORT & WORKSPACE -->
+    <!-- ============================================================================== -->
+    <div class="ml-[240px] flex-1 flex flex-col h-screen overflow-hidden relative bg-background">
+        
+        <!-- Persistent Top Header -->
+        <header class="h-16 shrink-0 bg-surface border-b border-outline-variant/20 flex justify-between items-center px-8 z-20 transition-all duration-200">
+            <!-- Context Title -->
+            <div class="flex items-center gap-4">
+                <span id="top-view-title" class="text-base font-bold text-primary">Executive Overview</span>
+                <span class="text-outline-variant">/</span>
+                <span id="top-view-subtitle" class="text-xs text-on-surface-variant">Real-time store operations & AI vision matrix</span>
             </div>
 
-            <!-- QR Code Container -->
-            <div class="flex flex-col items-center justify-center p-4 bg-surfaceInner rounded-xl border border-white/[0.04] space-y-3">
-                <div id="qr-code-container" class="flex items-center justify-center">
-                    <div class="w-44 h-44 flex items-center justify-center text-xs text-slate-500 font-mono animate-pulse">Generating QR...</div>
+            <!-- Top Center SPA Tab Selector (Quick Access) -->
+            <nav class="hidden lg:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl border border-outline-variant/30">
+                <button id="top-tab-overview" onclick="switchTab('overview')" class="top-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-primary bg-primary/10 border border-primary/30 transition-all">Overview</button>
+                <button id="top-tab-monitoring" onclick="switchTab('monitoring')" class="top-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Live Video</button>
+                <button id="top-tab-matrix" onclick="switchTab('matrix')" class="top-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Database</button>
+                <button id="top-tab-config" onclick="switchTab('config')" class="top-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Config</button>
+                <button id="top-tab-analytics" onclick="switchTab('analytics')" class="top-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-all">Analytics</button>
+            </nav>
+
+            <!-- Top Right Action Cluster -->
+            <div class="flex items-center gap-4">
+                <!-- Mobile Connect QR Button -->
+                <button onclick="openMobileConnectModal()" class="px-3 py-1.5 rounded-lg bg-primary-container/10 border border-primary/30 text-primary hover:bg-primary/20 text-xs font-mono font-bold flex items-center gap-1.5 tactile-btn shadow-[0_0_10px_rgba(0,210,255,0.15)]">
+                    <span class="material-symbols-outlined text-[16px]">qr_code_2</span>
+                    <span>Mobile Cam</span>
+                </button>
+
+                <!-- Shift Report Export -->
+                <button onclick="downloadReportCsv()" class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:text-primary transition-colors tactile-btn" title="Export Shift Summary CSV">
+                    <span class="material-symbols-outlined text-[18px]">download</span>
+                </button>
+
+                <!-- Notifications Pill -->
+                <div class="relative">
+                    <button class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">notifications</span>
+                        <span id="unread-alert-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-surface"></span>
+                    </button>
                 </div>
-                <p class="text-[11px] text-center text-slate-400 max-w-xs font-sans">
-                    Scan with your phone camera while connected to the same Wi-Fi network.
-                </p>
+            </div>
+        </header>
+
+        <!-- Main Scrolling Content Canvas -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+
+            <!-- ============================================================================== -->
+            <!-- TAB 1: EXECUTIVE OVERVIEW (view-overview) -->
+            <!-- ============================================================================== -->
+            <section id="view-overview" class="tab-view space-y-6">
+                <!-- Global Health Banner -->
+                <div id="overview-health-banner" class="w-full bg-secondary-container/10 border border-secondary-container/30 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+                    <div class="absolute -left-10 -top-10 w-32 h-32 bg-secondary/20 blur-[50px] rounded-full pointer-events-none"></div>
+                    <div class="flex items-center gap-4 relative z-10">
+                        <div id="overview-health-icon-bg" class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center border border-secondary/40 shrink-0">
+                            <span id="overview-health-icon" class="material-symbols-outlined text-secondary text-3xl">check_circle</span>
+                        </div>
+                        <div>
+                            <h2 id="overview-health-title" class="text-xl font-bold text-secondary flex items-center gap-2 tracking-tight">
+                                <span id="overview-health-dot" class="inline-block w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+                                STORE #104 • ALL STATIONS NORMAL
+                            </h2>
+                            <p id="overview-health-subtitle" class="text-xs text-on-surface-variant mt-0.5">Planograms, queue wait times, and edge vision models operating within peak parameters.</p>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-high px-4 py-2 rounded-lg border border-outline-variant/30 relative z-10 flex flex-col items-end shrink-0">
+                        <span class="font-mono text-[10px] text-on-surface-variant uppercase">Telemetry Sync</span>
+                        <span id="overview-last-sync" class="font-mono text-sm text-on-surface font-semibold tabular-nums">LIVE</span>
+                    </div>
+                </div>
+
+                <!-- KPI Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- KPI 1: Today's Footfall -->
+                    <div class="glass-panel rounded-xl p-5 relative overflow-hidden group hover:border-primary/50 transition-all">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-primary/40 group-hover:bg-primary transition-all"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-on-surface-variant text-sm">group</span>
+                                <h3 class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Store Footfall</h3>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span id="kpi-footfall-count" class="text-4xl font-extrabold text-on-surface tabular-nums">1,284</span>
+                            <span class="font-mono text-xs text-secondary flex items-center bg-secondary-container/10 px-2 py-0.5 rounded-full border border-secondary/20">
+                                <span class="material-symbols-outlined text-sm mr-0.5">trending_up</span> +12.4%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Shelf Stock Level -->
+                    <div class="glass-panel rounded-xl p-5 relative overflow-hidden group hover:border-primary/50 transition-all">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-primary/40 group-hover:bg-primary transition-all"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-on-surface-variant text-sm">inventory_2</span>
+                                <h3 class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Active Shelf Stock</h3>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span id="kpi-stock-pct" class="text-4xl font-extrabold text-on-surface tabular-nums">83%</span>
+                            <span id="kpi-stock-target" class="font-mono text-xs text-on-surface-variant">Cap: <span id="kpi-stock-count">5</span>/<span id="kpi-stock-cap">6</span></span>
+                        </div>
+                        <div class="w-full h-1.5 bg-surface-container-highest rounded-full mt-3 overflow-hidden">
+                            <div id="kpi-stock-progress" class="h-full bg-primary transition-all duration-300" style="width: 83%"></div>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Avg Checkout Wait -->
+                    <div class="glass-panel rounded-xl p-5 relative overflow-hidden group hover:border-primary/50 transition-all">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-primary/40 group-hover:bg-primary transition-all"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-on-surface-variant text-sm">timer</span>
+                                <h3 class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Mean Queue Wait</h3>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span id="kpi-wait-time" class="text-4xl font-extrabold text-on-surface tabular-nums">1.4<span class="text-xl text-on-surface-variant font-normal">m</span></span>
+                            <span id="kpi-queue-status-pill" class="font-mono text-xs text-secondary bg-secondary-container/10 px-2 py-0.5 rounded-full border border-secondary/20">NORMAL</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Critical Incidents -->
+                    <div class="glass-panel rounded-xl p-5 relative overflow-hidden group hover:border-error/50 transition-all">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-surface-variant group-hover:bg-error transition-all"></div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-on-surface-variant text-sm">warning</span>
+                                <h3 class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Active Alerts</h3>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span id="kpi-active-alerts-count" class="text-4xl font-extrabold text-secondary tabular-nums">0</span>
+                            <span class="font-mono text-xs text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded-full">Automated</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two-Column Priority Actions & Telemetry -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left: Priority Actions Feed -->
+                    <div class="lg:col-span-7 glass-panel rounded-xl flex flex-col h-[460px]">
+                        <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/40 rounded-t-xl">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[20px]">assignment_late</span>
+                                <h3 class="font-bold text-sm text-on-surface">Autonomous Staff Dispatch Log</h3>
+                            </div>
+                            <span class="font-mono text-[10px] bg-primary-container/10 text-primary px-2.5 py-0.5 rounded-full border border-primary/30">REAL-TIME</span>
+                        </div>
+                        <div id="overview-actions-feed" class="flex-1 overflow-y-auto p-4 space-y-3">
+                            <!-- Dynamic Priority Cards will be injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Right: System Telemetry & Quick Activity -->
+                    <div class="lg:col-span-5 flex flex-col gap-6">
+                        <!-- Telemetry Grid -->
+                        <div class="glass-panel rounded-xl p-5 relative overflow-hidden flex flex-col">
+                            <h3 class="font-bold text-sm text-on-surface mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[18px]">radar</span>
+                                Edge Hardware Telemetry
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-surface-container p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+                                    <div class="w-1.5 h-8 bg-secondary rounded-full"></div>
+                                    <div>
+                                        <p class="font-mono text-[10px] text-on-surface-variant uppercase">Silicon Engine</p>
+                                        <p id="telem-device" class="text-xs font-bold text-on-surface truncate">Qualcomm® NPU</p>
+                                    </div>
+                                </div>
+                                <div class="bg-surface-container p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+                                    <div class="w-1.5 h-8 bg-secondary rounded-full"></div>
+                                    <div>
+                                        <p class="font-mono text-[10px] text-on-surface-variant uppercase">SoC Thermals</p>
+                                        <p id="telem-temp" class="text-xs font-bold text-on-surface tabular-nums">48.2°C</p>
+                                    </div>
+                                </div>
+                                <div class="bg-surface-container p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+                                    <div class="w-1.5 h-8 bg-secondary rounded-full"></div>
+                                    <div>
+                                        <p class="font-mono text-[10px] text-on-surface-variant uppercase">Cam Array</p>
+                                        <p id="telem-cam-status" class="text-xs font-bold text-on-surface">3 Feeds Online</p>
+                                    </div>
+                                </div>
+                                <div class="bg-surface-container p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+                                    <div class="w-1.5 h-8 bg-secondary rounded-full"></div>
+                                    <div>
+                                        <p class="font-mono text-[10px] text-on-surface-variant uppercase">Inference Latency</p>
+                                        <p id="telem-latency" class="text-xs font-bold text-on-surface tabular-nums">&lt;22ms</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Stream Activity Feed -->
+                        <div class="glass-panel rounded-xl flex-1 flex flex-col overflow-hidden min-h-[220px]">
+                            <div class="p-3.5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/40">
+                                <h3 class="font-bold text-xs text-on-surface">Event Timeline</h3>
+                                <div class="flex items-center gap-1 text-primary">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                                    <span class="font-mono text-[10px]">SYNCED</span>
+                                </div>
+                            </div>
+                            <div id="overview-activity-timeline" class="p-4 flex-1 overflow-y-auto space-y-3 font-mono text-xs">
+                                <!-- Dynamic timeline elements -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================================== -->
+            <!-- TAB 2: LIVE MONITORING (view-monitoring) -->
+            <!-- ============================================================================== -->
+            <section id="view-monitoring" class="tab-view hidden space-y-6">
+                <!-- Toolbar: Feeds & Scenario Controls -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 glass-panel p-3.5 rounded-xl">
+                    <!-- Camera Matrix Selectors -->
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono text-xs text-on-surface-variant uppercase mr-1">Active Feeds:</span>
+                        <button class="px-3 py-1.5 rounded-lg border border-primary bg-primary/10 text-primary font-mono text-xs flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            CAM-01 (Shelf)
+                        </button>
+                        <button class="px-3 py-1.5 rounded-lg border border-outline-variant/50 text-on-surface-variant hover:text-primary font-mono text-xs transition-colors">
+                            CAM-02 (USB Queue)
+                        </button>
+                        <button class="px-3 py-1.5 rounded-lg border border-outline-variant/50 text-on-surface-variant hover:text-primary font-mono text-xs transition-colors">
+                            CAM-03 (Mobile)
+                        </button>
+                    </div>
+
+                    <!-- Interactive Scenario Evaluator -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-mono text-xs text-on-surface-variant uppercase mr-1">Test Scenarios:</span>
+                        <button onclick="setScenario('normal')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 text-xs font-semibold text-on-surface hover:border-secondary transition-all tactile-btn">
+                            🟢 Normal Flow
+                        </button>
+                        <button onclick="setScenario('browsing')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 text-xs font-semibold text-on-surface hover:border-primary transition-all tactile-btn">
+                            🟡 Shopper Browsing
+                        </button>
+                        <button onclick="setScenario('empty')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 text-xs font-semibold text-on-surface hover:border-error transition-all tactile-btn">
+                            🔴 Stock Depleted
+                        </button>
+                        <button onclick="setScenario('queue_surge')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 text-xs font-semibold text-on-surface hover:border-tertiary transition-all tactile-btn">
+                            🚨 Queue Congested
+                        </button>
+                        <button onclick="resetScenario()" class="px-2.5 py-1.5 rounded-lg text-error hover:bg-error/10 font-mono text-xs transition-colors flex items-center gap-1 tactile-btn" title="Reset to Real Hardware">
+                            <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3-Station Video Monitoring Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Station 1: Cam 01 (Overhead Shelf) -->
+                    <div class="glass-panel rounded-xl overflow-hidden flex flex-col relative group ai-glow">
+                        <div class="p-3 bg-surface-container-high/80 border-b border-outline-variant/20 flex justify-between items-center z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                                <span class="font-mono text-xs text-primary font-bold">CAM-01 • SHELF</span>
+                            </div>
+                            <span id="cam1-fps-badge" class="font-mono text-[10px] text-secondary bg-black/60 px-2 py-0.5 rounded border border-white/10 tabular-nums">30.0 FPS</span>
+                        </div>
+                        <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+                            <img id="video-stream-cam1" src="/video_feed/cam1" alt="Primary Shelf Feed" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 scanline-overlay"></div>
+                        </div>
+                        <div class="p-3 bg-surface-container flex justify-between items-center text-xs font-mono">
+                            <span id="cam1-source-label" class="text-on-surface-variant truncate">Primary Webcam</span>
+                            <span id="cam1-latency-label" class="text-secondary font-bold tabular-nums">24ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Station 2: Cam 02 (Physical USB Webcam / Queue) -->
+                    <div class="glass-panel rounded-xl overflow-hidden flex flex-col relative group">
+                        <div class="p-3 bg-surface-container-high/80 border-b border-outline-variant/20 flex justify-between items-center z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                                <span class="font-mono text-xs text-primary font-bold">CAM-02 • USB QUEUE</span>
+                            </div>
+                            <span id="cam2-fps-badge" class="font-mono text-[10px] text-secondary bg-black/60 px-2 py-0.5 rounded border border-white/10 tabular-nums">30.0 FPS</span>
+                        </div>
+                        <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+                            <img id="video-stream-cam2" src="/video_feed/cam2" alt="Secondary Queue Feed" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 scanline-overlay"></div>
+                        </div>
+                        <div class="p-3 bg-surface-container flex justify-between items-center text-xs font-mono">
+                            <span id="cam2-source-label" class="text-on-surface-variant truncate">USB Webcam</span>
+                            <span id="cam2-latency-label" class="text-secondary font-bold tabular-nums">26ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Station 3: Cam 03 (Mobile Roaming Camera) -->
+                    <div class="glass-panel rounded-xl overflow-hidden flex flex-col relative group">
+                        <div class="p-3 bg-surface-container-high/80 border-b border-outline-variant/20 flex justify-between items-center z-10">
+                            <div class="flex items-center gap-2">
+                                <span id="cam3-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                <span class="font-mono text-xs text-tertiary font-bold">CAM-03 • MOBILE AUX</span>
+                            </div>
+                            <span id="cam3-fps-badge" class="font-mono text-[10px] text-on-surface-variant bg-black/60 px-2 py-0.5 rounded border border-white/10 tabular-nums">STANDBY</span>
+                        </div>
+                        <div class="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+                            <img id="video-stream-cam3" src="/video_feed/cam3" alt="Auxiliary Mobile Feed" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 scanline-overlay"></div>
+                        </div>
+                        <div class="p-3 bg-surface-container flex justify-between items-center text-xs font-mono">
+                            <span id="cam3-source-label" class="text-on-surface-variant truncate">Mobile Feed</span>
+                            <button onclick="openMobileConnectModal()" class="text-primary hover:underline text-[11px] font-bold">Connect Phone</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Telemetry & Operational Cards -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left Stats Cluster -->
+                    <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="glass-panel rounded-xl p-4 flex flex-col justify-between">
+                            <span class="font-mono text-[10px] text-on-surface-variant uppercase">Detection Framework</span>
+                            <div class="mt-2">
+                                <div class="text-xl font-bold text-primary">YOLOv8-Nano</div>
+                                <div class="text-xs text-on-surface-variant">Class-Filtered Inference</div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-outline-variant/20 flex justify-between font-mono text-xs">
+                                <span class="text-on-surface-variant">Stride</span>
+                                <span class="text-secondary font-bold">1:1 Zero-Decimation</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-xl p-4 flex flex-col justify-between">
+                            <span class="font-mono text-[10px] text-on-surface-variant uppercase">Camera Watchdog</span>
+                            <div class="mt-2">
+                                <div class="text-xl font-bold text-secondary">Zero-Lag Locked</div>
+                                <div class="text-xs text-on-surface-variant">Buffer Size = 1</div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-outline-variant/20 flex justify-between font-mono text-xs">
+                                <span class="text-on-surface-variant">Recovery</span>
+                                <span class="text-secondary font-bold">Automatic Hotplug</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-xl p-4 flex flex-col justify-between">
+                            <span class="font-mono text-[10px] text-on-surface-variant uppercase">Occlusion Debounce</span>
+                            <div class="mt-2">
+                                <div class="text-xl font-bold text-tertiary">CSIM Active</div>
+                                <div class="text-xs text-on-surface-variant">Phantom Stock Shield</div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-outline-variant/20 flex justify-between font-mono text-xs">
+                                <span class="text-on-surface-variant">Debounce</span>
+                                <span class="text-tertiary font-bold">1.5s IoU Matrix</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Live Activity Terminal -->
+                    <div class="lg:col-span-4 glass-panel rounded-xl flex flex-col h-[280px]">
+                        <div class="p-3 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-high/60">
+                            <span class="font-mono text-xs text-on-surface font-bold flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px] text-primary">terminal</span>
+                                Real-Time Vision Log
+                            </span>
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        </div>
+                        <div id="live-terminal-log" class="flex-1 overflow-y-auto p-3 font-mono text-[11px] space-y-2 leading-relaxed">
+                            <!-- Dynamic log records -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================================== -->
+            <!-- TAB 3: DATABASE & LIVE MATRIX (view-matrix) -->
+            <!-- ============================================================================== -->
+            <section id="view-matrix" class="tab-view hidden space-y-6">
+                <!-- Smart Traffic Director Header Banner -->
+                <div class="w-full bg-primary-container/10 border border-primary/30 rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-primary-container/20 text-primary flex items-center justify-center border border-primary/40 shrink-0">
+                            <span class="material-symbols-outlined text-xl">traffic</span>
+                        </div>
+                        <div>
+                            <span class="font-mono text-[10px] text-primary uppercase font-bold tracking-wider">Dynamic Multi-Register Traffic Director</span>
+                            <p id="smart-recommendation-banner" class="text-sm font-semibold text-on-surface mt-0.5">All checkout registers are flowing normally.</p>
+                        </div>
+                    </div>
+                    <span class="font-mono text-xs bg-surface-container-high px-3 py-1 rounded-lg border border-outline-variant/30 text-primary font-bold">AI ROUTING ACTIVE</span>
+                </div>
+
+                <!-- Multi-Shelf Planogram Inventory Table -->
+                <div class="glass-panel rounded-xl overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-outline-variant/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-surface-container/60">
+                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[18px]">inventory_2</span>
+                            Multi-Shelf Planogram Inventory Matrix
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <button onclick="autoBaselineShelf()" class="px-3 py-1.5 bg-primary text-on-primary font-mono text-xs font-bold rounded-lg hover:brightness-110 transition-all tactile-btn flex items-center gap-1.5 shadow-[0_0_8px_rgba(0,210,255,0.3)]">
+                                <span class="material-symbols-outlined text-[16px]">tune</span>
+                                Auto-Baseline Capacity
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-surface-container-high/80 border-b border-outline-variant/30 text-on-surface-variant font-mono text-[11px] uppercase tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Tier / Shelf Zone</th>
+                                    <th class="py-3 px-4">FMCG Category</th>
+                                    <th class="py-3 px-4 text-right">Max Cap</th>
+                                    <th class="py-3 px-4 text-right">Live Stock</th>
+                                    <th class="py-3 px-4">Fill Percentage</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-shelf-tbody" class="font-mono text-xs text-on-surface divide-y divide-outline-variant/10">
+                                <!-- Dynamic rows populated by updateMatrixView() -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Multi-Register Checkout Lanes Table -->
+                <div class="glass-panel rounded-xl overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/60">
+                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[18px]">point_of_sale</span>
+                            Checkout Register Traffic & Wait-Time Matrix
+                        </h3>
+                        <span class="font-mono text-[11px] text-on-surface-variant">Congestion Threshold: 3 Customers</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-surface-container-high/80 border-b border-outline-variant/30 text-on-surface-variant font-mono text-[11px] uppercase tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Register Lane</th>
+                                    <th class="py-3 px-4">Register Type</th>
+                                    <th class="py-3 px-4 text-right">Queued Shoppers</th>
+                                    <th class="py-3 px-4 text-right">Est Wait Time</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Traffic Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-queue-tbody" class="font-mono text-xs text-on-surface divide-y divide-outline-variant/10">
+                                <!-- Dynamic rows populated by updateMatrixView() -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================================== -->
+            <!-- TAB 4: STORE CONFIGURATION & CALIBRATION (view-config) -->
+            <!-- ============================================================================== -->
+            <section id="view-config" class="tab-view hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-on-surface">Enterprise Store & Zone Configuration</h2>
+                        <p class="text-xs text-on-surface-variant mt-1">Calibrate spatial detection zones, camera stream roles, and automated dispatch rules.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="switchCameraPreview(1)" id="config-btn-cam1" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-mono text-xs font-bold transition-all">Cam 01</button>
+                        <button onclick="switchCameraPreview(2)" id="config-btn-cam2" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 font-mono text-xs text-on-surface transition-all">Cam 02</button>
+                        <button onclick="switchCameraPreview(3)" id="config-btn-cam3" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 font-mono text-xs text-on-surface transition-all">Cam 03</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[560px]">
+                    <!-- Left: Interactive Calibration Workspace -->
+                    <div class="lg:col-span-8 glass-panel rounded-xl flex flex-col overflow-hidden relative">
+                        <div class="p-3 bg-surface-container-high border-b border-outline-variant/20 flex justify-between items-center">
+                            <span class="font-mono text-xs font-bold text-on-surface uppercase tracking-wider">Spatial ROI Calibrator Canvas</span>
+                            <span class="px-2 py-0.5 rounded bg-secondary/10 text-secondary font-mono text-[10px] border border-secondary/30">Click & Drag to Draw ROI</span>
+                        </div>
+                        <div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+                            <canvas id="config-calibrator-canvas" width="640" height="360" class="w-full h-full object-contain cursor-crosshair"></canvas>
+                        </div>
+                        <div class="p-3 bg-surface-container border-t border-outline-variant/20 flex justify-between items-center gap-3">
+                            <div class="flex items-center gap-2">
+                                <button onclick="selectConfigZoneType('SHELF')" id="cfg-zone-btn-shelf" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-mono text-xs font-bold">Shelf Zone</button>
+                                <button onclick="selectConfigZoneType('QUEUE')" id="cfg-zone-btn-queue" class="px-3 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant/40 font-mono text-xs text-on-surface hover:text-primary">Queue Lane</button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="resetCalibrationOverlay()" class="px-3 py-1.5 rounded-lg border border-outline-variant/40 font-mono text-xs text-on-surface hover:bg-surface-container-high transition-colors">Reset</button>
+                                <button onclick="saveCurrentConfigZone()" class="px-4 py-1.5 rounded-lg bg-secondary text-on-secondary font-mono text-xs font-bold hover:brightness-110 transition-all shadow-[0_0_10px_rgba(78,222,163,0.3)]">Save ROI Zone</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Properties & Hardware Management -->
+                    <div class="lg:col-span-4 flex flex-col gap-5 overflow-y-auto">
+                        <!-- Zone Properties Card -->
+                        <div class="glass-panel rounded-xl p-5 space-y-4">
+                            <h3 class="font-bold text-sm text-on-surface border-b border-outline-variant/20 pb-2">Zone Calibration Properties</h3>
+                            <div>
+                                <label class="block font-mono text-[11px] text-on-surface-variant mb-1">Zone Identifier</label>
+                                <input id="cfg-zone-name" type="text" value="Shelf Tier 01" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-2 font-mono text-xs text-on-surface focus:border-primary outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-mono text-[11px] text-on-surface-variant mb-1">Max Capacity</label>
+                                    <input id="cfg-zone-cap" type="number" value="6" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-2 font-mono text-xs text-on-surface text-right focus:border-primary outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-mono text-[11px] text-on-surface-variant mb-1">Threshold (%)</label>
+                                    <input id="cfg-zone-threshold" type="number" value="25" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded-lg p-2 font-mono text-xs text-on-surface text-right focus:border-primary outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-mono text-[11px] text-on-surface-variant mb-1">Normalized Coordinates [X1, Y1, X2, Y2]</label>
+                                <input id="cfg-zone-coords" type="text" readonly value="[0.10, 0.20, 0.90, 0.85]" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg p-2 font-mono text-xs text-on-surface-variant cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <!-- Hardware Ingest Sources -->
+                        <div class="glass-panel rounded-xl p-5 space-y-3">
+                            <h3 class="font-bold text-sm text-on-surface border-b border-outline-variant/20 pb-2">Hardware Ingest Matrix</h3>
+                            
+                            <div class="p-3 rounded-lg bg-surface-container border border-secondary/30 flex items-center justify-between">
+                                <div>
+                                    <div class="font-bold text-xs text-on-surface">Integrated / Cam 01</div>
+                                    <div class="font-mono text-[10px] text-secondary">V4L2/DSHOW • 640x360</div>
+                                </div>
+                                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            </div>
+
+                            <div class="p-3 rounded-lg bg-surface-container border border-secondary/30 flex items-center justify-between">
+                                <div>
+                                    <div class="font-bold text-xs text-on-surface">USB Webcam / Cam 02</div>
+                                    <div class="font-mono text-[10px] text-secondary">Zero-Lag Ingest • Active</div>
+                                </div>
+                                <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            </div>
+
+                            <div class="p-3 rounded-lg bg-surface-container border border-outline-variant/30 flex items-center justify-between">
+                                <div>
+                                    <div class="font-bold text-xs text-on-surface">Smartphone Auxiliary</div>
+                                    <div class="font-mono text-[10px] text-on-surface-variant">WebSocket TLS</div>
+                                </div>
+                                <button onclick="openMobileConnectModal()" class="text-xs font-mono font-bold text-primary hover:underline">Pair QR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================================== -->
+            <!-- TAB 5: REPORTS & BUSINESS ANALYTICS (view-analytics) -->
+            <!-- ============================================================================== -->
+            <section id="view-analytics" class="tab-view hidden space-y-6">
+                <!-- Analytics Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-on-surface">Reports & Business Analytics</h2>
+                        <p class="text-xs text-on-surface-variant mt-1">Autonomous intelligence impact, prevented phantom stockouts, and historical compliance.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="downloadReportCsv()" class="px-4 py-2 rounded-lg bg-primary text-on-primary font-mono text-xs font-bold hover:brightness-110 transition-all flex items-center gap-1.5 shadow-[0_0_8px_rgba(0,210,255,0.3)]">
+                            <span class="material-symbols-outlined text-[16px]">download</span>
+                            Download Shift Report (CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Analytics KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-panel rounded-xl p-5 flex flex-col justify-between h-32 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <span class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Lost Sales Prevented</span>
+                            <span class="material-symbols-outlined text-primary text-lg">payments</span>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <span class="text-3xl font-extrabold text-on-surface">₹18,450</span>
+                            <span class="font-mono text-xs text-secondary flex items-center bg-secondary-container/10 px-2 py-0.5 rounded-full">+14.2%</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+                        <div class="flex justify-between items-start">
+                            <span class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Restock Interventions</span>
+                            <span class="material-symbols-outlined text-tertiary text-lg">inventory</span>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <span id="analytics-restock-count" class="text-3xl font-extrabold text-on-surface tabular-nums">27</span>
+                            <span class="font-mono text-xs text-on-surface-variant">Today's Shift</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+                        <div class="flex justify-between items-start">
+                            <span class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Avg Wait Time</span>
+                            <span class="material-symbols-outlined text-secondary text-lg">timer</span>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <span id="analytics-wait-time" class="text-3xl font-extrabold text-on-surface tabular-nums">1.4m</span>
+                            <span class="font-mono text-xs text-secondary">-18% vs Baseline</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 flex flex-col justify-between h-32">
+                        <div class="flex justify-between items-start">
+                            <span class="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider">Detection Accuracy</span>
+                            <span class="material-symbols-outlined text-primary text-lg">verified</span>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <span class="text-3xl font-extrabold text-secondary">98.6%</span>
+                            <span class="font-mono text-xs text-secondary">Edge YOLOv8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peak Traffic Chart & Shift Analytics -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Traffic Chart -->
+                    <div class="lg:col-span-8 glass-panel rounded-xl p-6 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="font-bold text-sm text-on-surface">Store Traffic & Checkout Queue Load</h3>
+                                <p class="text-xs text-on-surface-variant mt-0.5">Real-time hourly shopper volume vs register wait duration.</p>
+                            </div>
+                            <span class="font-mono text-[10px] bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/30">HOURLY DISTRIBUTION</span>
+                        </div>
+                        <div class="flex-1 min-h-[260px] relative">
+                            <canvas id="analytics-traffic-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Shift Metrics Summary -->
+                    <div class="lg:col-span-4 glass-panel rounded-xl p-5 flex flex-col justify-between space-y-4">
+                        <h3 class="font-bold text-sm text-on-surface border-b border-outline-variant/20 pb-2">Shift Performance Summary</h3>
+                        <div class="space-y-3 font-mono text-xs">
+                            <div class="flex justify-between py-1 border-b border-outline-variant/10">
+                                <span class="text-on-surface-variant">Store Location</span>
+                                <span class="text-on-surface font-bold">Store #104 (Supercenter)</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-outline-variant/10">
+                                <span class="text-on-surface-variant">Active Vision Nodes</span>
+                                <span class="text-secondary font-bold">3 Physical/Aux Feeds</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-outline-variant/10">
+                                <span class="text-on-surface-variant">Total Items Purchased</span>
+                                <span id="summary-items-taken" class="text-primary font-bold tabular-nums">0</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-outline-variant/10">
+                                <span class="text-on-surface-variant">Total Restock Cycles</span>
+                                <span id="summary-items-restocked" class="text-secondary font-bold tabular-nums">0</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span class="text-on-surface-variant">SQLite Storage Mode</span>
+                                <span class="text-on-surface font-bold">WAL Zero-Latency</span>
+                            </div>
+                        </div>
+                        <button onclick="downloadReportCsv()" class="w-full py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 font-mono text-xs font-bold text-primary flex items-center justify-center gap-2 tactile-btn">
+                            <span class="material-symbols-outlined text-[16px]">file_download</span>
+                            Export Full SQLite Audit Log
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event History Table from SQLite -->
+                <div class="glass-panel rounded-xl overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/60">
+                        <h3 class="font-bold text-sm text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[18px]">history</span>
+                            Audit Trail & Incident Log (SQLite Event Store)
+                        </h3>
+                        <span class="font-mono text-[11px] text-on-surface-variant">Real-Time Event Append</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-[300px]">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-surface-container-high/80 border-b border-outline-variant/30 text-on-surface-variant font-mono text-[11px] uppercase tracking-wider sticky top-0 z-10">
+                                <tr>
+                                    <th class="py-2.5 px-4">Event ID</th>
+                                    <th class="py-2.5 px-4">Timestamp</th>
+                                    <th class="py-2.5 px-4">Event Type</th>
+                                    <th class="py-2.5 px-4">Zone / Register</th>
+                                    <th class="py-2.5 px-4">Severity</th>
+                                    <th class="py-2.5 px-4">Action Summary</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-events-tbody" class="font-mono text-xs text-on-surface divide-y divide-outline-variant/10">
+                                <!-- Dynamic rows from /api/history/events -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ============================================================================== -->
+    <!-- 3. SMARTPHONE MOBILE CAMERA CONNECTION MODAL -->
+    <!-- ============================================================================== -->
+    <div id="mobile-qr-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-surface-container-low border border-outline-variant/40 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative">
+            <button onclick="closeMobileConnectModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center border border-primary/40">
+                    <span class="material-symbols-outlined text-xl">smartphone</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-on-surface">Connect Smartphone Camera</h3>
+                    <p class="text-xs text-on-surface-variant font-mono">Zero-Lag WebSocket Feed</p>
+                </div>
+            </div>
+
+            <!-- QR Code Render Area -->
+            <div class="flex justify-center p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/20" id="qr-code-container">
+                <!-- QR code image injected dynamically -->
             </div>
 
             <!-- Direct URL & Copy Button -->
-            <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] flex items-center justify-between gap-2">
-                <span id="mobile-connect-url" class="text-xs font-mono text-cyan-300 truncate">http://192.168.0.7:8000/mobile_cam</span>
-                <button onclick="copyMobileUrl()" class="px-3 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-obsidian font-bold text-xs shrink-0 transition">
-                    Copy Link
-                </button>
+            <div class="p-2.5 rounded-lg bg-surface-container border border-outline-variant/20 flex items-center justify-between">
+                <span id="mobile-connect-url" class="font-mono text-[11px] text-primary truncate max-w-[220px]">https://localhost:8000/mobile_cam</span>
+                <button onclick="copyMobileUrl()" class="px-2.5 py-1 rounded bg-primary text-on-primary font-mono text-[10px] font-bold hover:brightness-110 transition-all tactile-btn">Copy</button>
             </div>
 
-            <button onclick="toggleMobileModal()" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition">
-                Done
-            </button>
-
+            <p class="font-mono text-[10px] text-on-surface-variant text-center">
+                * Note: Tap 'Advanced' -> 'Proceed' if self-signed SSL warning appears.
+            </p>
         </div>
     </div>
 
-    <!-- G. INTERACTIVE ROI CALIBRATION MODAL -->
-    <div id="roi-calibration-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden" onclick="if(event.target === this) closeCalibrationModal()">
-        <div class="ops-kpi-card max-w-2xl w-full max-h-[94vh] flex flex-col p-4 sm:p-5 border border-white/10 shadow-2xl my-auto">
-            
-            <!-- Modal Header with Quick Save & Close -->
-            <div class="flex items-center justify-between border-b border-white/[0.08] pb-3 shrink-0">
-                <div class="flex items-center gap-2.5">
-                    <div class="p-2 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800/60">
-                        <i data-lucide="crosshair" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            Planogram & Queue Calibrator <span id="calib-zone-tag" class="text-xs font-mono text-cyan-300 font-normal">// TIER 1 BEVERAGES</span>
-                        </h3>
-                        <p class="text-[11px] text-slate-400">Drag handles or presets to adjust zone boundaries</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="saveCalibration()" class="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian font-extrabold text-xs transition flex items-center gap-1.5 shadow-md tactile-btn">
-                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                        <span>Save & Apply</span>
-                    </button>
-                    <button onclick="closeCalibrationModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 transition" title="Close (Esc)">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- ============================================================================== -->
+    <!-- 4. GLOBAL TOAST NOTIFICATION CONTAINER -->
+    <!-- ============================================================================== -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-            <!-- Scrollable Modal Body -->
-            <div class="overflow-y-auto pr-1 space-y-3 flex-1 py-2">
-                <!-- Multi-Zone Target Selector Bar & Action Controls -->
-                <div class="space-y-2 p-2.5 rounded-xl bg-surfaceInner border border-white/[0.04] text-xs font-mono">
-                    <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/[0.06]">
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Zones & Counters:</span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button onclick="addNewQueueLane()" class="px-2 py-1 rounded bg-amber-950/60 hover:bg-amber-900 border border-amber-600/70 text-amber-300 text-[10px] font-bold transition flex items-center gap-1">
-                                <i data-lucide="plus" class="w-3 h-3"></i> Add Counter
-                            </button>
-                            <button onclick="addNewShelfTier()" class="px-2 py-1 rounded bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-600/70 text-cyan-300 text-[10px] font-bold transition flex items-center gap-1">
-                                <i data-lucide="plus" class="w-3 h-3"></i> Add Shelf
-                            </button>
-                            <button onclick="deleteActiveZone()" id="btn-delete-zone" class="px-2 py-1 rounded bg-red-950/40 hover:bg-red-900 border border-red-800/60 text-red-300 text-[10px] font-bold transition flex items-center gap-1">
-                                <i data-lucide="trash-2" class="w-3 h-3"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Zone Selection Buttons Container -->
-                    <div class="flex flex-wrap gap-1.5" id="calib-zone-selector">
-                        <!-- Populated dynamically via app.js -->
-                    </div>
-
-                    <!-- Active Zone Details Editor -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1.5 border-t border-white/[0.06] items-center">
-                        <div class="sm:col-span-2 flex items-center gap-2">
-                            <label class="text-[10px] text-slate-400 shrink-0">Label:</label>
-                            <input id="calib-zone-name-input" type="text" placeholder="e.g. Counter 3" oninput="updateActiveZoneName(this.value)" class="w-full px-2 py-1 rounded-lg bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-cyan-500 transition">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <label id="calib-zone-param-label" class="text-[10px] text-slate-400 shrink-0">Threshold:</label>
-                            <input id="calib-zone-param-input" type="number" min="1" max="100" oninput="updateActiveZoneParam(this.value)" class="w-full px-2 py-1 rounded-lg bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-cyan-500 transition">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Canvas Interactive Viewport -->
-                <div class="relative aspect-video max-h-[260px] w-full rounded-xl overflow-hidden bg-black border border-white/10 flex items-center justify-center shadow-inner mx-auto">
-                    <canvas id="roi-calibration-canvas" width="640" height="360" class="w-full h-full object-contain roi-interactive"></canvas>
-                </div>
-
-                <!-- Coordinates & Perspective Presets Bar -->
-                <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-surfaceInner border border-white/[0.06] text-xs font-mono">
-                    <div class="text-slate-300 text-[11px]">
-                        <span>Coords: </span>
-                        <span id="calib-coords-label" class="text-cyan-300 font-bold">[X1: 0.10, Y1: 0.20 &rarr; X2: 0.90, Y2: 0.85]</span>
-                    </div>
-                    <div class="flex flex-wrap gap-1">
-                        <button onclick="applyRoiPreset('LEFT_HALF')" class="px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-slate-300 text-[10px] transition">Left Col</button>
-                        <button onclick="applyRoiPreset('RIGHT_HALF')" class="px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-slate-300 text-[10px] transition">Right Col</button>
-                        <button onclick="applyRoiPreset('CENTER')" class="px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-slate-300 text-[10px] transition">Center</button>
-                        <button onclick="applyRoiPreset('FULL')" class="px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/10 text-slate-300 text-[10px] transition">Full Frame</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Action Buttons Footer -->
-            <div class="flex gap-3 pt-3 border-t border-white/[0.08] shrink-0">
-                <button onclick="closeCalibrationModal()" class="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition tactile-btn">
-                    Cancel (Esc)
-                </button>
-                <button onclick="saveCalibration()" class="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian font-extrabold text-xs transition shadow-lg flex items-center justify-center gap-1.5 tactile-btn">
-                    <i data-lucide="check" class="w-4 h-4"></i>
-                    <span>Save Planogram & Lanes</span>
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- H. DAILY SHIFT SUMMARY REPORT MODAL -->
-    <div id="shift-summary-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="ops-kpi-card max-w-3xl w-full p-6 space-y-5 border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
-            
-            <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="p-2 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800/60">
-                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-white">Daily Operational Shift Report</h3>
-                        <p class="text-xs text-slate-400 font-mono">Store #104 • SQLite WAL Persistent Store</p>
-                    </div>
-                </div>
-                <button onclick="closeShiftSummaryModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            </div>
-
-            <!-- KPI Metric Tiles Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-1">
-                    <span class="text-[10px] text-slate-400 uppercase">Total Footfall</span>
-                    <p id="shift-footfall" class="text-2xl font-extrabold text-white tabular-nums">142</p>
-                    <span class="text-[10px] text-emerald-400">Shoppers tracked</span>
-                </div>
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-1">
-                    <span class="text-[10px] text-slate-400 uppercase">Peak Congestion</span>
-                    <p id="shift-peak-hour" class="text-base font-bold text-amber-300">14:00 - 15:00</p>
-                    <span class="text-[10px] text-slate-400">High traffic window</span>
-                </div>
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-1">
-                    <span class="text-[10px] text-slate-400 uppercase">Avg Wait Time</span>
-                    <p id="shift-avg-wait" class="text-2xl font-extrabold text-cyan-300 tabular-nums">1.4m</p>
-                    <span class="text-[10px] text-slate-400">Per shopper</span>
-                </div>
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] space-y-1">
-                    <span class="text-[10px] text-slate-400 uppercase">Restock Alerts</span>
-                    <p id="shift-restock-count" class="text-2xl font-extrabold text-red-300 tabular-nums">3</p>
-                    <span class="text-[10px] text-slate-400">Debounced & Resolved</span>
-                </div>
-            </div>
-
-            <!-- Secondary Analytics Row -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] flex justify-between items-center">
-                    <span class="text-slate-400">Cashier Dispatches:</span>
-                    <span id="shift-dispatches" class="font-bold text-amber-300 text-sm">2</span>
-                </div>
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] flex justify-between items-center">
-                    <span class="text-slate-400">Mean Restock Lag:</span>
-                    <span id="shift-mean-lag" class="font-bold text-emerald-300 text-sm">48.2s</span>
-                </div>
-                <div class="p-3 rounded-xl bg-surfaceInner border border-white/[0.06] flex justify-between items-center">
-                    <span class="text-slate-400">Edge Uptime:</span>
-                    <span id="shift-uptime" class="font-bold text-cyan-300 text-sm">8.5 hrs</span>
-                </div>
-            </div>
-
-            <!-- Recent Incidents Table -->
-            <div class="space-y-2">
-                <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                    Latest Incident Log (SQLite WAL Records)
-                </h4>
-                <div class="rounded-xl border border-white/[0.06] bg-surfaceInner overflow-hidden max-h-48 overflow-y-auto">
-                    <table class="w-full text-left text-xs font-mono">
-                        <thead class="bg-black/50 text-slate-400 border-b border-white/[0.06] text-[10px] uppercase">
-                            <tr>
-                                <th class="p-2.5">Time</th>
-                                <th class="p-2.5">Zone</th>
-                                <th class="p-2.5">Event</th>
-                                <th class="p-2.5">Severity</th>
-                            </tr>
-                        </thead>
-                        <tbody id="shift-events-tbody" class="divide-y divide-white/[0.04] text-slate-300">
-                            <tr>
-                                <td colspan="4" class="p-3 text-center text-slate-500">Loading incident records...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Footer Actions -->
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeShiftSummaryModal()" class="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition">
-                    Close
-                </button>
-                <button onclick="exportShiftCsv()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center gap-1.5">
-                    <i data-lucide="download" class="w-4 h-4"></i>
-                    <span>Export Shift Log (CSV)</span>
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Client Controller Script -->
+    <!-- Application Client Controller -->
     <script src="/static/app.js"></script>
 </body>
 </html>
