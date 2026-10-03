@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Matrix - RetailSense OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#ffb148",
+                      "surface-variant": "#353437",
+                      "tertiary": "#ffd6a7",
+                      "primary-fixed-dim": "#47d6ff",
+                      "surface-container-lowest": "#0e0e10",
+                      "surface-bright": "#39393b",
+                      "error-container": "#93000a",
+                      "inverse-surface": "#e5e1e4",
+                      "on-primary-fixed": "#001f28",
+                      "on-secondary-container": "#00311f",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-tertiary": "#472a00",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-primary": "#003543",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-container": "#704500",
+                      "background": "#131315",
+                      "surface-container-high": "#2a2a2c",
+                      "primary-fixed": "#b6ebff",
+                      "tertiary-fixed": "#ffddb8",
+                      "error": "#ffb4ab",
+                      "inverse-primary": "#00677f",
+                      "secondary": "#4edea3",
+                      "on-secondary": "#003824",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container": "#201f21",
+                      "surface-container-low": "#1c1b1d",
+                      "primary-container": "#00d2ff",
+                      "primary": "#a5e7ff",
+                      "on-background": "#e5e1e4",
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-secondary-fixed": "#002113",
+                      "on-surface": "#e5e1e4",
+                      "inverse-on-surface": "#313032",
+                      "outline": "#859399",
+                      "surface-container-highest": "#353437",
+                      "on-primary-fixed-variant": "#004e60",
+                      "surface-tint": "#47d6ff",
+                      "on-surface-variant": "#bbc9cf",
+                      "outline-variant": "#3c494e",
+                      "surface-dim": "#131315",
+                      "on-primary-container": "#00566a",
+                      "surface": "#131315",
+                      "secondary-container": "#00a572"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1440px",
+                      "gutter": "16px",
+                      "unit": "4px",
+                      "margin-desktop": "32px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "body-sm": [
+                              "Geist"
+                      ],
+                      "mono-label": [
+                              "JetBrains Mono"
+                      ],
+                      "mono-data": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-sm": [
+                              "Geist"
+                      ],
+                      "headline-md": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-label": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "mono-data": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: #0a0a0c; color: #e5e1e4; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3c494e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #859399; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden font-body-md text-body-md bg-background">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-surface-container-low dark:bg-surface-container-low docked left-0 h-full w-[240px] border-r border-outline-variant/20 flat no shadows flex-col h-screen py-gutter px-unit z-20">
+<div class="px-3 mb-8">
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary font-bold tracking-tight">RetailSense OS</h1>
+<p class="font-mono-label text-mono-label text-on-surface-variant mt-1">STORE #104</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-body-md">Live Monitoring</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-primary dark:text-primary font-bold border-r-2 border-primary bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined filled-icon">database</span>
+<span class="font-body-md">Database</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Configuration</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md">Analytics</span>
+</a>
+</div>
+<div class="mt-auto space-y-4">
+<div class="px-3 py-3 bg-surface-container rounded-lg border border-outline-variant/30 flex items-center justify-between">
+<span class="font-mono-label text-mono-label text-secondary">Edge AI Active</span>
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">sensors</span>
+<span class="font-mono-label text-mono-label">System Online</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="hidden md:flex bg-surface dark:bg-surface docked top-0 right-0 w-full border-b border-outline-variant/20 flat no shadows flex justify-between items-center h-16 px-margin-desktop z-10 transition-all duration-200">
+<div class="flex items-center">
+<!-- Mobile menu toggle would go here -->
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-lowest border border-outline-variant/50 rounded-md pl-9 pr-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all w-64 placeholder:text-on-surface-variant" placeholder="Global Search..." type="text"/>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant ml-4 border-l border-outline-variant/30 pl-4">
+<button class="p-1.5 rounded-full hover:bg-surface-container-high hover:text-primary dark:hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-1.5 rounded-full hover:bg-surface-container-high hover:text-primary dark:hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined">store</span>
+</button>
+<button class="p-1.5 rounded-full hover:bg-surface-container-high hover:text-primary dark:hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter md:p-margin-desktop">
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Live Matrix</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time inventory and checkout operations.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+<!-- Shelf Inventory Section (Spans 8 columns on extra large) -->
+<section class="xl:col-span-12 bg-[#16161a] border border-white/10 rounded-xl overflow-hidden flex flex-col h-[500px]">
+<!-- Toolbar -->
+<div class="p-4 border-b border-outline-variant/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-low/50">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+                            Shelf Inventory
+                        </h3>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative flex-1 sm:flex-none">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-[#0a0a0c] border border-outline-variant/40 rounded-md pl-9 pr-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Search Aisles..." type="text"/>
+</div>
+<button class="px-3 py-1.5 bg-[#0a0a0c] border border-outline-variant/40 rounded-md font-mono-label text-mono-label text-on-surface hover:border-primary/50 transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                                FILTER
+                            </button>
+<button class="px-3 py-1.5 bg-[#0a0a0c] border border-outline-variant/40 rounded-md font-mono-label text-mono-label text-on-surface hover:border-primary/50 transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                                EXPORT
+                            </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-[#16161a] border-b border-outline-variant/30 z-10">
+<tr>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Shelf/Aisle</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Category</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Target</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Live Count</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Stock Level</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Last Updated</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-mono-data text-mono-data text-on-surface divide-y divide-outline-variant/10">
+<tr class="hover:bg-[#1c1c21] transition-colors group">
+<td class="py-2.5 px-4 font-medium text-primary">A12-B</td>
+<td class="py-2.5 px-4">Beverages</td>
+<td class="py-2.5 px-4 text-right">240</td>
+<td class="py-2.5 px-4 text-right">238</td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-2">
+<span class="w-8">99%</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden w-16">
+<div class="h-full bg-secondary" style="width: 99%"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono-label bg-secondary/10 text-secondary border border-secondary/20">OPTIMAL</span>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant">Just now</td>
+<td class="py-2.5 px-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-[#1c1c21] transition-colors group">
+<td class="py-2.5 px-4 font-medium text-primary">A04-C</td>
+<td class="py-2.5 px-4">Dairy</td>
+<td class="py-2.5 px-4 text-right">150</td>
+<td class="py-2.5 px-4 text-right">32</td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-2">
+<span class="w-8">21%</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden w-16">
+<div class="h-full bg-error" style="width: 21%"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono-label bg-error/10 text-error border border-error/20">RESTOCK NEEDED</span>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant">2m ago</td>
+<td class="py-2.5 px-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-[#1c1c21] transition-colors group">
+<td class="py-2.5 px-4 font-medium text-primary">B08-A</td>
+<td class="py-2.5 px-4">Snacks</td>
+<td class="py-2.5 px-4 text-right">400</td>
+<td class="py-2.5 px-4 text-right">180</td>
+<td class="py-2.5 px-4">
+<div class="flex items-center gap-2">
+<span class="w-8">45%</span>
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden w-16">
+<div class="h-full bg-tertiary-container" style="width: 45%"></div>
+</div>
+</div>
+</td>
+<td class="py-2.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono-label bg-tertiary-container/10 text-tertiary-container border border-tertiary-container/20">LOW STOCK</span>
+</td>
+<td class="py-2.5 px-4 text-on-surface-variant">5m ago</td>
+<td class="py-2.5 px-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Checkout Queue Section -->
+<section class="xl:col-span-12 bg-[#16161a] border border-white/10 rounded-xl overflow-hidden flex flex-col h-[350px]">
+<div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low/50">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">point_of_sale</span>
+                            Checkout Queue Telemetry
+                        </h3>
+</div>
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-[#16161a] border-b border-outline-variant/30 z-10">
+<tr>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Register</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Lane Type</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Live Headcount</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Est. Wait</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="py-3 px-4 font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-mono-data text-mono-data text-on-surface divide-y divide-outline-variant/10">
+<tr class="hover:bg-[#1c1c21] transition-colors">
+<td class="py-3 px-4 font-medium">REG-01</td>
+<td class="py-3 px-4 text-on-surface-variant">Self-Checkout</td>
+<td class="py-3 px-4 text-right font-medium text-error">12</td>
+<td class="py-3 px-4 text-right text-error">8m 30s</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono-label bg-error/10 text-error border border-error/20">CONGESTED</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="px-3 py-1 bg-[#00d2ff] text-[#000000] font-mono-label text-mono-label rounded hover:bg-[#a5e7ff] transition-colors">DISPATCH ASST</button>
+</td>
+</tr>
+<tr class="hover:bg-[#1c1c21] transition-colors">
+<td class="py-3 px-4 font-medium">REG-02</td>
+<td class="py-3 px-4 text-on-surface-variant">Cashier</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">-</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">-</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono-label bg-surface-variant/30 text-on-surface-variant border border-outline-variant/30">CLOSED</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="px-3 py-1 border border-[#00d2ff] text-[#00d2ff] font-mono-label text-mono-label rounded hover:bg-[#00d2ff]/10 transition-colors">OPEN REG 2</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

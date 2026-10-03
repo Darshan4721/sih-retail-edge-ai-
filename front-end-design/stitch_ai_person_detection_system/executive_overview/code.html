@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Overview - RetailSense OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#ffb148",
+                        "surface-variant": "#353437",
+                        "tertiary": "#ffd6a7",
+                        "primary-fixed-dim": "#47d6ff",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-bright": "#39393b",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e5e1e4",
+                        "on-primary-fixed": "#001f28",
+                        "on-secondary-container": "#00311f",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary": "#472a00",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-primary": "#003543",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#704500",
+                        "background": "#131315",
+                        "surface-container-high": "#2a2a2c",
+                        "primary-fixed": "#b6ebff",
+                        "tertiary-fixed": "#ffddb8",
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#00677f",
+                        "secondary": "#4edea3",
+                        "on-secondary": "#003824",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container": "#201f21",
+                        "surface-container-low": "#1c1b1d",
+                        "primary-container": "#00d2ff",
+                        "primary": "#a5e7ff",
+                        "on-background": "#e5e1e4",
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "on-surface": "#e5e1e4",
+                        "inverse-on-surface": "#313032",
+                        "outline": "#859399",
+                        "surface-container-highest": "#353437",
+                        "on-primary-fixed-variant": "#004e60",
+                        "surface-tint": "#47d6ff",
+                        "on-surface-variant": "#bbc9cf",
+                        "outline-variant": "#3c494e",
+                        "surface-dim": "#131315",
+                        "on-primary-container": "#00566a",
+                        "surface": "#131315",
+                        "secondary-container": "#00a572"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist", "sans-serif"],
+                        "display-lg": ["Geist", "sans-serif"],
+                        "body-sm": ["Geist", "sans-serif"],
+                        "mono-label": ["JetBrains Mono", "monospace"],
+                        "mono-data": ["JetBrains Mono", "monospace"],
+                        "headline-sm": ["Geist", "sans-serif"],
+                        "headline-md": ["Geist", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "mono-data": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for high-end feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131315; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c494e; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #859399; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center h-16 px-margin-desktop bg-surface dark:bg-surface border-b border-outline-variant/20 transition-all duration-200">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary font-bold">RetailSense OS</span>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-8 h-full">
+<a class="h-full flex items-center px-4 font-body-md text-body-md text-primary font-bold border-b-2 border-primary hover:text-primary transition-colors duration-200" href="#">Overview</a>
+<a class="h-full flex items-center px-4 font-body-md text-body-md text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Live Monitoring</a>
+<a class="h-full flex items-center px-4 font-body-md text-body-md text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Database</a>
+<a class="h-full flex items-center px-4 font-body-md text-body-md text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Configuration</a>
+<a class="h-full flex items-center px-4 font-body-md text-body-md text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#">Analytics</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200 hover:bg-surface-container relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors duration-200 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="store">store</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 ml-2">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A macro photography style close up portrait of an individual illuminated in dark, high tech blue studio lighting. The lighting reflects a sharp, focused environment. Premium corporate, highly detailed, photorealistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATkre8IoL0mdEWkkfqRDMnZRBykWbz9rfJXErf0MrSjOSgtQrVv7ay3GV979iNIj_gDMFI7PaJs9_BlEqWc9gPMSPZyo2I8SgFgdqnKTf5lczBolfXrm6IIp7xcT8dKtG38MaaJdY4RiFG37cisCGfJ7aoYy8lpDLwCL0XOEHpTTfNBhykglOFs91TwQZdv8uLhwU3do-5WENX-y1LMC8ApOOZGC_BSymQSRPLGLf9ib_ItVUY2PzA"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Bar (Docked Left) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-[240px] bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant/20 flex flex-col py-gutter px-unit z-40 hidden md:flex transition-colors duration-200">
+<div class="px-4 mb-8">
+<p class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider mb-2">Active Location</p>
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-lg border border-outline-variant/20">
+<div class="w-10 h-10 rounded-md overflow-hidden bg-primary-container/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="storefront">storefront</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-bold text-on-surface">STORE #104</h3>
+<p class="font-body-sm text-body-sm text-secondary flex items-center gap-1 mt-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        Edge AI Active
+                    </p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-surface-container-high rounded-md text-primary dark:text-primary font-bold border-l-2 border-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined fill" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-md text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+<span class="font-body-md text-body-md">Live Monitoring</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-md text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-body-md text-body-md">Database</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-md text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Configuration</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-md text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/20 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-secondary" data-icon="sensors">sensors</span>
+<span class="font-body-md text-body-md flex-1">System Online</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="pt-16 md:pl-[240px] min-h-screen">
+<div class="max-w-[1440px] mx-auto p-margin-mobile md:p-margin-desktop space-y-gutter">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-2">Executive Overview</h1>
+<p class="font-headline-sm text-headline-sm text-on-surface-variant">Morning briefing • Store #104 • Real-time operational health.</p>
+</div>
+<div class="flex items-center gap-3 self-start md:self-end">
+<button class="h-10 px-4 rounded-md border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors duration-200 font-body-md flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="download">download</span>
+                        Export Report
+                    </button>
+<button class="h-10 px-4 rounded-md bg-primary-container text-on-primary-container font-body-md font-bold hover:bg-primary transition-colors duration-200 flex items-center gap-2 shadow-[0_0_8px_rgba(0,210,255,0.3)]">
+<span class="material-symbols-outlined text-lg" data-icon="refresh">refresh</span>
+                        Refresh Data
+                    </button>
+</div>
+</div>
+<!-- Global Health Banner -->
+<div class="w-full bg-secondary-container/10 border border-secondary-container/30 rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+<!-- Decorative background glow -->
+<div class="absolute -left-10 -top-10 w-32 h-32 bg-secondary/20 blur-[50px] rounded-full pointer-events-none"></div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-secondary font-bold flex items-center gap-2">
+<span class="inline-block w-3 h-3 rounded-full bg-secondary animate-pulse"></span>
+                            ALL STATIONS NORMAL
+                        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Store operations are running within expected parameters.</p>
+</div>
+</div>
+<div class="bg-surface-container-high px-4 py-2 rounded-md border border-outline-variant/30 relative z-10 flex flex-col items-end">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase">Last Update</span>
+<span class="font-mono-data text-mono-data text-on-surface">10:42:18 AM</span>
+</div>
+</div>
+<!-- KPI Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- KPI 1 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-5 hover:border-primary/50 transition-colors duration-300 relative group overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-surface-variant group-hover:bg-primary transition-colors duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="group">group</span>
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase">Today's Footfall</h3>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-display-lg text-display-lg text-on-surface">1,284</span>
+<span class="font-mono-data text-mono-data text-secondary flex items-center mb-2 bg-secondary-container/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
+                            +12.4% vs ytd
+                        </span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-5 hover:border-primary/50 transition-colors duration-300 relative group overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-surface-variant group-hover:bg-primary transition-colors duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="inventory_2">inventory_2</span>
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase">Active Shelf Stock</h3>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-display-lg text-display-lg text-on-surface">87%</span>
+<div class="flex flex-col mb-1">
+<span class="font-mono-data text-mono-data text-secondary flex items-center">
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_upward">arrow_upward</span>
+                                +4.2%
+                            </span>
+<span class="font-mono-label text-mono-label text-on-surface-variant">Target: 90%</span>
+</div>
+</div>
+<!-- Mini progress bar -->
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-primary" style="width: 87%"></div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-5 hover:border-primary/50 transition-colors duration-300 relative group overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-surface-variant group-hover:bg-primary transition-colors duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="timer">timer</span>
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase">Avg Checkout Wait</h3>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-display-lg text-display-lg text-on-surface">3.2<span class="text-2xl text-on-surface-variant">m</span></span>
+<span class="font-mono-data text-mono-data text-secondary flex items-center mb-2 bg-secondary-container/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_down">trending_down</span>
+                            -18% vs prev
+                        </span>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-5 hover:border-error/50 transition-colors duration-300 relative group overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-surface-variant group-hover:bg-error transition-colors duration-300"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="warning">warning</span>
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase">Critical Incidents</h3>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-display-lg text-display-lg text-error">3</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant mb-2 bg-surface-container-highest px-2 py-0.5 rounded-full">
+                            2 resolved
+                        </span>
+</div>
+</div>
+</div>
+<!-- Two Column Layout: Priorities & Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mt-8">
+<!-- Priority Actions List (Left Column) -->
+<div class="lg:col-span-7 bg-surface-container-low border border-outline-variant/20 rounded-xl flex flex-col h-[500px]">
+<div class="p-5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/50 rounded-t-xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="assignment_late">assignment_late</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Priority Actions</h3>
+</div>
+<span class="bg-primary-container/10 text-primary-container font-mono-label px-3 py-1 rounded-full text-xs">Action Required</span>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-2">
+<!-- Alert Item 1: Critical -->
+<div class="bg-surface p-4 rounded-lg border border-error-container/50 hover:bg-surface-container-high transition-colors flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-error" data-icon="inventory">inventory</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<h4 class="font-body-md text-body-md font-bold text-on-surface">Shelf A2 - Restock Required</h4>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">High-velocity items depleted below 15% threshold. Replenishment needed to avoid lost sales.</p>
+<div class="font-mono-label text-mono-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                                        10:38:45 AM
+                                    </div>
+</div>
+</div>
+<button class="shrink-0 w-full sm:w-auto px-4 py-2 bg-error text-on-error font-body-sm font-bold rounded-md hover:bg-error/90 transition-colors">Dispatch Staff</button>
+</div>
+<!-- Alert Item 2: Warning -->
+<div class="bg-surface p-4 rounded-lg border border-tertiary-container/30 hover:bg-surface-container-high transition-colors flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-tertiary" data-icon="point_of_sale">point_of_sale</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<h4 class="font-body-md text-body-md font-bold text-on-surface">Register 1 - Queue Congestion</h4>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Queue length exceeds 5 customers. Estimated wait time spiking.</p>
+<div class="font-mono-label text-mono-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                                        10:40:12 AM
+                                    </div>
+</div>
+</div>
+<button class="shrink-0 w-full sm:w-auto px-4 py-2 border border-tertiary text-tertiary font-body-sm font-bold rounded-md hover:bg-tertiary/10 transition-colors">Open Register 3</button>
+</div>
+<!-- Alert Item 3: Normal/Resolved -->
+<div class="bg-surface p-4 rounded-lg border border-secondary-container/20 hover:bg-surface-container-high transition-colors flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center opacity-70">
+<div class="flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-secondary-container/10 flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-secondary" data-icon="videocam">videocam</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<h4 class="font-body-md text-body-md font-bold text-on-surface">Camera 02 - Operating Normally</h4>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Previous connection instability resolved. Stream stabilized.</p>
+<div class="font-mono-label text-mono-label text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                                        10:25:00 AM
+                                    </div>
+</div>
+</div>
+<span class="shrink-0 text-secondary font-body-sm font-bold px-4 py-2 bg-secondary-container/10 rounded-md">Resolved</span>
+</div>
+</div>
+</div>
+<!-- Store Activity & Visualization (Right Column) -->
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<!-- Operational Health Visualization (Bento Sub-card) -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-5 relative overflow-hidden flex flex-col">
+<!-- Abstract tech background -->
+<div class="absolute right-0 top-0 w-48 h-48 bg-primary/5 blur-[80px] rounded-full"></div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center gap-2 relative z-10">
+<span class="material-symbols-outlined text-primary" data-icon="radar">radar</span>
+                            System Telemetry
+                        </h3>
+<div class="grid grid-cols-2 gap-4 relative z-10">
+<!-- Telemetry Node 1 -->
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+<div class="w-2 h-10 bg-secondary rounded-full"></div>
+<div>
+<p class="font-mono-label text-mono-label text-on-surface-variant">Inventory Sync</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">Optimal</p>
+</div>
+</div>
+<!-- Telemetry Node 2 -->
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+<div class="w-2 h-10 bg-tertiary rounded-full"></div>
+<div>
+<p class="font-mono-label text-mono-label text-on-surface-variant">POS Network</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">Elevated Load</p>
+</div>
+</div>
+<!-- Telemetry Node 3 -->
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+<div class="w-2 h-10 bg-secondary rounded-full"></div>
+<div>
+<p class="font-mono-label text-mono-label text-on-surface-variant">Camera Array</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">98% Online</p>
+</div>
+</div>
+<!-- Telemetry Node 4 -->
+<div class="bg-surface p-3 rounded-lg border border-outline-variant/30 flex items-center gap-3">
+<div class="w-2 h-10 bg-secondary rounded-full"></div>
+<div>
+<p class="font-mono-label text-mono-label text-on-surface-variant">Staff Comm</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">Active</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Store Activity Timeline -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl flex-1 flex flex-col overflow-hidden min-h-[250px]">
+<div class="p-5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container/50">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Live Activity Stream</h3>
+<div class="flex items-center gap-1 text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-mono-label text-mono-label">LIVE</span>
+</div>
+</div>
+<div class="p-5 flex-1 overflow-y-auto space-y-4">
+<!-- Timeline item -->
+<div class="relative pl-6 pb-2 border-l border-outline-variant/30 last:border-0 last:pb-0">
+<div class="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-primary border-2 border-surface-container-low"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm text-body-sm font-bold text-on-surface">Customer entering zone: Electronics</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">10:41:05</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">AI detected dwell time &gt; 2 mins near high-value displays.</p>
+</div>
+<!-- Timeline item -->
+<div class="relative pl-6 pb-2 border-l border-outline-variant/30 last:border-0 last:pb-0">
+<div class="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-surface-variant border-2 border-surface-container-low"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm text-body-sm font-bold text-on-surface text-on-surface-variant">Cart Checkout Completed #8921</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">10:39:22</span>
+</div>
+</div>
+<!-- Timeline item -->
+<div class="relative pl-6 pb-2 border-l border-outline-variant/30 last:border-0 last:pb-0">
+<div class="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-tertiary border-2 border-surface-container-low"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm text-body-sm font-bold text-on-surface">Spill Detected: Aisle 4</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">10:35:10</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Janitorial staff notified automatically.</p>
+</div>
+<!-- Timeline item -->
+<div class="relative pl-6 pb-2 border-l border-outline-variant/30 last:border-0 last:pb-0">
+<div class="absolute left-[-5px] top-1 w-[9px] h-[9px] rounded-full bg-surface-variant border-2 border-surface-container-low"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-body-sm text-body-sm font-bold text-on-surface text-on-surface-variant">Manager Override Approved</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">10:30:45</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

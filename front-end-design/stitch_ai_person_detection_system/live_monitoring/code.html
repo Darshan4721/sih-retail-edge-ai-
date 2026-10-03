@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RetailSense OS - Live Monitoring</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#ffb148",
+                      "surface-variant": "#353437",
+                      "tertiary": "#ffd6a7",
+                      "primary-fixed-dim": "#47d6ff",
+                      "surface-container-lowest": "#0e0e10",
+                      "surface-bright": "#39393b",
+                      "error-container": "#93000a",
+                      "inverse-surface": "#e5e1e4",
+                      "on-primary-fixed": "#001f28",
+                      "on-secondary-container": "#00311f",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-tertiary": "#472a00",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-primary": "#003543",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-container": "#704500",
+                      "background": "#131315",
+                      "surface-container-high": "#2a2a2c",
+                      "primary-fixed": "#b6ebff",
+                      "tertiary-fixed": "#ffddb8",
+                      "error": "#ffb4ab",
+                      "inverse-primary": "#00677f",
+                      "secondary": "#4edea3",
+                      "on-secondary": "#003824",
+                      "on-secondary-fixed-variant": "#005236",
+                      "surface-container": "#201f21",
+                      "surface-container-low": "#1c1b1d",
+                      "primary-container": "#00d2ff",
+                      "primary": "#a5e7ff",
+                      "on-background": "#e5e1e4",
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-secondary-fixed": "#002113",
+                      "on-surface": "#e5e1e4",
+                      "inverse-on-surface": "#313032",
+                      "outline": "#859399",
+                      "surface-container-highest": "#353437",
+                      "on-primary-fixed-variant": "#004e60",
+                      "surface-tint": "#47d6ff",
+                      "on-surface-variant": "#bbc9cf",
+                      "outline-variant": "#3c494e",
+                      "surface-dim": "#131315",
+                      "on-primary-container": "#00566a",
+                      "surface": "#131315",
+                      "secondary-container": "#00a572"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1440px",
+                      "gutter": "16px",
+                      "unit": "4px",
+                      "margin-desktop": "32px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "body-sm": [
+                              "Geist"
+                      ],
+                      "mono-label": [
+                              "JetBrains Mono"
+                      ],
+                      "mono-data": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-sm": [
+                              "Geist"
+                      ],
+                      "headline-md": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-label": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "mono-data": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Base styles mimicking depth and scanlines for CCTV */
+        .panel-border {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .scanline-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .ai-glow {
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.15);
+        }
+        
+        /* Custom scrollbar for high-density tech feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131315; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c494e; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #859399; 
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased overflow-hidden flex h-screen w-full">
+<!-- Shared Component: SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[240px] z-20 bg-surface-container-low dark:bg-surface-container-low flex flex-col py-gutter px-unit border-r border-outline-variant/20 transition-colors duration-200">
+<!-- Header -->
+<div class="px-3 py-4 mb-6 flex flex-col gap-1">
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary font-bold">RetailSense OS</h1>
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase tracking-wider">STORE #104</span>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-1">
+<!-- Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body-md text-body-md font-medium">Overview</span>
+</a>
+<!-- Live Monitoring (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-primary dark:text-primary font-bold border-r-2 border-primary bg-primary/5 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">videocam</span>
+<span class="font-body-md text-body-md">Live Monitoring</span>
+</a>
+<!-- Database -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">database</span>
+<span class="font-body-md text-body-md font-medium">Database</span>
+</a>
+<!-- Configuration -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-md text-body-md font-medium">Configuration</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-body-md text-body-md font-medium">Analytics</span>
+</a>
+</div>
+<!-- Footer / System Status -->
+<div class="mt-auto flex flex-col gap-3 pt-4 border-t border-outline-variant/20 px-3">
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[16px]">sensors</span>
+<span class="font-mono-label text-mono-label">System Online</span>
+</div>
+<button class="w-full py-2 px-4 rounded bg-primary-container text-on-primary-container font-mono-label text-mono-label font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="w-2 h-2 rounded-full bg-on-primary-container animate-pulse"></span>
+                Edge AI Active
+            </button>
+</div>
+</nav>
+<!-- Main Workspace -->
+<div class="ml-[240px] flex-1 flex flex-col h-screen relative bg-background">
+<!-- Shared Component: TopNavBar -->
+<header class="h-16 shrink-0 bg-surface dark:bg-surface flex justify-between items-center px-margin-desktop border-b border-outline-variant/20 z-10 transition-all duration-200">
+<!-- Contextual Breadcrumb/Title -->
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm text-primary dark:text-primary">Live Monitoring</span>
+<span class="text-outline-variant">/</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Real-time computer vision and store operations</span>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-6">
+<!-- Search (Intent: on_right) -->
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-64 bg-surface-container-lowest border border-outline-variant/50 rounded-full py-1.5 pl-9 pr-4 text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-colors" placeholder="Query Node..." type="text"/>
+</div>
+<!-- Action Icons -->
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-200 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined">store</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-200">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter md:p-margin-desktop flex flex-col gap-6">
+<!-- Toolbar -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-surface-container panel-border p-3 rounded-lg">
+<!-- Camera Selectors -->
+<div class="flex items-center gap-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase mr-2">Feeds:</span>
+<button class="px-3 py-1.5 rounded border border-primary bg-primary/10 text-primary font-mono-label text-mono-label flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                        CAM-01
+                    </button>
+<button class="px-3 py-1.5 rounded border border-outline-variant/50 hover:border-primary/50 text-on-surface-variant hover:text-primary font-mono-label text-mono-label transition-colors">
+                        CAM-02
+                    </button>
+<button class="px-3 py-1.5 rounded border border-outline-variant/50 hover:border-primary/50 text-on-surface-variant hover:text-primary font-mono-label text-mono-label transition-colors">
+                        CAM-03
+                    </button>
+</div>
+<!-- Scenario Controls -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-mono-label text-mono-label text-on-surface-variant uppercase mr-2">Scenarios:</span>
+<button class="px-3 py-1.5 rounded bg-surface-container-high border border-outline-variant/30 text-body-sm text-on-surface hover:border-primary/50 transition-colors">
+                        Customer Browsing
+                    </button>
+<button class="px-3 py-1.5 rounded bg-surface-container-high border border-outline-variant/30 text-body-sm text-on-surface hover:border-primary/50 transition-colors">
+                        Stock Empty
+                    </button>
+<button class="px-3 py-1.5 rounded bg-surface-container-high border border-outline-variant/30 text-body-sm text-on-surface hover:border-primary/50 transition-colors">
+                        Queue Congestion
+                    </button>
+<div class="w-px h-6 bg-outline-variant/30 mx-1"></div>
+<button class="px-3 py-1.5 rounded text-error hover:bg-error/10 font-mono-label text-mono-label transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                        Reset
+                    </button>
+</div>
+</div>
+<!-- Grid Layout for Telemetry -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full min-h-[600px]">
+<!-- Left Column (CCTV Feeds & Stats) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Dual Camera View -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+<!-- CAM-01 Feed -->
+<div class="relative bg-surface-container-lowest rounded-lg panel-border overflow-hidden flex flex-col group ai-glow">
+<!-- Overlay Header -->
+<div class="absolute top-0 left-0 w-full p-3 flex justify-between items-start z-10 bg-gradient-to-b from-black/80 to-transparent">
+<div class="flex flex-col gap-1">
+<span class="font-mono-label text-mono-label text-primary bg-black/50 px-2 py-0.5 rounded border border-primary/30">CAM-01 MAIN AISLE</span>
+<span class="font-mono-label text-[10px] text-secondary">REC 🔴 00:14:32:01</span>
+</div>
+<span class="font-mono-label text-[10px] text-on-surface-variant bg-black/50 px-2 py-0.5 rounded">1920x1080 @ 30FPS</span>
+</div>
+<!-- Video Placeholder -->
+<div class="relative flex-1 bg-surface-dim w-full h-full min-h-[300px]">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" data-alt="A simulated CCTV camera feed looking down a brightly lit retail store aisle. The aesthetic is a highly technical, dark-mode cyber-security interface. Deep blacks and cool greys dominate, with sharp, precise lighting illuminating shelves stocked with abstract, uniform products. The mood is clinical and observational, emphasizing a high-tech surveillance environment." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBpg_jVu1nNzWNgYgJCeNbJzk9Wt-2GyzTqpi46UqYWJ9FG6bqdQSTEYFptB-XhfqssewGr4cq8VM8ba8YDhRkcBi3uzrFnwVD5aCdTZJ4dqOD2nJB9VS1cBAW2v89exlh_ZfL6cTY_9RnQ9jDdDD9kq6IYqc7dk8j7Gjw3Bux1BU-GZDdQTZ4jSly961QjnXfJMEni6GSilJohcCnIQRW3Q0vxqGltSVT6XLR9iLZz4MFQvg8HXFDC')"></div>
+<div class="absolute inset-0 scanline-overlay"></div>
+<!-- Bounding Boxes (Simulated) -->
+<div class="absolute top-1/4 left-1/3 w-32 h-64 border-2 border-primary bg-primary/5">
+<div class="absolute -top-5 left-[-2px] bg-primary text-on-primary-container font-mono-label text-[10px] px-1 font-bold whitespace-nowrap">PERSON 98%</div>
+<div class="absolute bottom-1 right-1 font-mono-label text-[10px] text-primary bg-black/60 px-1">ID: 4092</div>
+</div>
+<div class="absolute bottom-10 right-1/4 w-48 h-32 border border-secondary border-dashed bg-secondary/5">
+<div class="absolute -top-4 left-[-1px] text-secondary font-mono-label text-[10px] px-1 whitespace-nowrap">ROI: SHELF_A2_ENDCAP</div>
+</div>
+</div>
+<!-- Real-time HUD -->
+<div class="absolute bottom-3 left-3 flex gap-2 z-10">
+<div class="bg-black/60 backdrop-blur-sm border border-outline-variant/30 rounded px-2 py-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">group</span>
+<span class="font-mono-data text-mono-data text-on-surface">Count: 4</span>
+</div>
+</div>
+</div>
+<!-- CAM-02 Feed -->
+<div class="relative bg-surface-container-lowest rounded-lg panel-border overflow-hidden flex flex-col group">
+<!-- Overlay Header -->
+<div class="absolute top-0 left-0 w-full p-3 flex justify-between items-start z-10 bg-gradient-to-b from-black/80 to-transparent">
+<div class="flex flex-col gap-1">
+<span class="font-mono-label text-mono-label text-on-surface-variant bg-black/50 px-2 py-0.5 rounded border border-outline-variant/30">CAM-02 CHECKOUT</span>
+<span class="font-mono-label text-[10px] text-secondary">REC 🔴 00:14:32:01</span>
+</div>
+</div>
+<!-- Video Placeholder -->
+<div class="relative flex-1 bg-surface-dim w-full h-full min-h-[300px]">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" data-alt="A simulated security camera view of a modern retail checkout zone. The visual style mimics a sophisticated, dark-theme operational dashboard. Ambient lighting is low-key, focusing crisp white light on the checkout counters. The overall aesthetic is clean, data-driven, and authoritative, featuring deep contrasting shadows and sharp geometric lines." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAe3ZRVgK-kQKV1X4GaV_d12BLjA88G2bgv2Yt1vZScUnuF8NVykE6GM3MJdMaJ7N7WYGWuuSw-5Fa5ciAjDRnd6x_nu_El3GC5VSLRRHzZHmGGfaG8jK5zoFrLaEI_nUuSoi-y1NKk_hRXMU_AsPiUnu3p4xzC1mD9pshRkiR2SrbpSLAP7m-53Dntwwjfy4_c_RtvqwS2_-Xx3DjSz-YA6hrU6kTf3k4YZ7D-5Eu_sk5IgLXHOT1_')"></div>
+<div class="absolute inset-0 scanline-overlay"></div>
+<!-- Bounding Boxes (Simulated) -->
+<div class="absolute top-1/3 right-1/3 w-24 h-48 border-2 border-tertiary bg-tertiary/5">
+<div class="absolute -top-5 left-[-2px] bg-tertiary text-on-tertiary-container font-mono-label text-[10px] px-1 font-bold whitespace-nowrap">PERSON 85%</div>
+</div>
+<div class="absolute top-1/2 left-1/4 w-20 h-40 border-2 border-primary bg-primary/5">
+<div class="absolute -top-5 left-[-2px] bg-primary text-on-primary-container font-mono-label text-[10px] px-1 font-bold whitespace-nowrap">PERSON 92%</div>
+</div>
+</div>
+<!-- Real-time HUD -->
+<div class="absolute bottom-3 left-3 flex gap-2 z-10">
+<div class="bg-black/60 backdrop-blur-sm border border-tertiary/30 rounded px-2 py-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-tertiary">schedule</span>
+<span class="font-mono-data text-mono-data text-tertiary">Est. Wait: 3m 15s</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Cards (Bottom Row) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Engine Stats -->
+<div class="bg-surface-container panel-border rounded-lg p-4 flex flex-col gap-2">
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">memory</span>
+                                Detection Engine
+                            </h3>
+<div class="flex justify-between items-end mt-2">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary">YOLO-v8</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Edge Processing</span>
+</div>
+<div class="text-right flex flex-col">
+<span class="font-mono-data text-mono-data text-on-surface">28 FPS</span>
+<span class="font-mono-data text-[11px] text-secondary">34ms infer</span>
+</div>
+</div>
+</div>
+<!-- Camera Health -->
+<div class="bg-surface-container panel-border rounded-lg p-4 flex flex-col gap-2">
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">health_and_safety</span>
+                                Camera Health
+                            </h3>
+<div class="flex justify-between items-end mt-2">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-secondary">Online</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Network Status</span>
+</div>
+<div class="text-right flex flex-col">
+<span class="font-mono-data text-mono-data text-on-surface">82ms ping</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">0% pkt loss</span>
+</div>
+</div>
+</div>
+<!-- Current Scenario State -->
+<div class="bg-surface-container panel-border rounded-lg p-4 flex flex-col gap-2 relative overflow-hidden">
+<div class="absolute right-0 top-0 w-1 h-full bg-primary"></div>
+<h3 class="font-mono-label text-mono-label text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">rule</span>
+                                Active Scenario
+                            </h3>
+<div class="flex justify-between items-end mt-2">
+<div class="flex flex-col w-full">
+<span class="font-body-md text-body-md font-bold text-on-surface truncate">Customer Browsing</span>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+<span class="font-mono-label text-[10px] text-on-surface-variant mt-1 text-right">Confidence: 65%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Live Activity Feed) -->
+<div class="lg:col-span-4 bg-surface-container panel-border rounded-lg flex flex-col overflow-hidden">
+<div class="p-4 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low">
+<h2 class="font-mono-label text-mono-label text-on-surface-variant uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                            Live Activity Log
+                        </h2>
+<button class="text-primary hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 font-mono-data text-[12px] leading-relaxed">
+<!-- Log Entries -->
+<div class="flex items-start gap-3 opacity-60">
+<span class="text-on-surface-variant shrink-0">10:41:02</span>
+<span class="text-secondary shrink-0">[SYS]</span>
+<span class="text-on-surface">Node sync complete. Latency stable.</span>
+</div>
+<div class="flex items-start gap-3">
+<span class="text-on-surface-variant shrink-0">10:41:15</span>
+<span class="text-primary shrink-0">[DET]</span>
+<span class="text-on-surface">Person detected entering aisle 3. ID assigned: 4092.</span>
+</div>
+<div class="flex items-start gap-3 bg-error/10 p-2 rounded border-l-2 border-error">
+<span class="text-error shrink-0">10:42:18</span>
+<span class="text-error font-bold shrink-0">🔴 RESTOCK REQUIRED</span>
+<span class="text-on-error-container">Shelf A2 reached 12% stock capacity. Action dispatched to Staff Terminal.</span>
+</div>
+<div class="flex items-start gap-3">
+<span class="text-on-surface-variant shrink-0">10:42:45</span>
+<span class="text-tertiary shrink-0">[WARN]</span>
+<span class="text-on-surface">Queue build-up detected at Checkout 2. Est wait &gt; 3 mins.</span>
+</div>
+<div class="flex items-start gap-3">
+<span class="text-on-surface-variant shrink-0">10:43:10</span>
+<span class="text-primary shrink-0">[DET]</span>
+<span class="text-on-surface">Trajectory tracking active on ID: 4092. Dwelling at Endcap B.</span>
+</div>
+<div class="flex items-start gap-3 opacity-60">
+<span class="text-on-surface-variant shrink-0">10:44:00</span>
+<span class="text-secondary shrink-0">[SYS]</span>
+<span class="text-on-surface">Routine frame capture archived to bucket 'cam01-arch'.</span>
+</div>
+<!-- Typing indicator / live cursor -->
+<div class="flex items-center gap-2 mt-2">
+<span class="w-2 h-4 bg-primary animate-pulse"></span>
+<span class="text-on-surface-variant text-[10px] italic">Awaiting telemetry...</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

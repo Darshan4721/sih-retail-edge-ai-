@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RetailSense OS - Store Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#ffb148",
+                        "surface-variant": "#353437",
+                        "tertiary": "#ffd6a7",
+                        "primary-fixed-dim": "#47d6ff",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-bright": "#39393b",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e5e1e4",
+                        "on-primary-fixed": "#001f28",
+                        "on-secondary-container": "#00311f",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary": "#472a00",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-primary": "#003543",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#704500",
+                        "background": "#131315",
+                        "surface-container-high": "#2a2a2c",
+                        "primary-fixed": "#b6ebff",
+                        "tertiary-fixed": "#ffddb8",
+                        "error": "#ffb4ab",
+                        "inverse-primary": "#00677f",
+                        "secondary": "#4edea3",
+                        "on-secondary": "#003824",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container": "#201f21",
+                        "surface-container-low": "#1c1b1d",
+                        "primary-container": "#00d2ff",
+                        "primary": "#a5e7ff",
+                        "on-background": "#e5e1e4",
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "on-surface": "#e5e1e4",
+                        "inverse-on-surface": "#313032",
+                        "outline": "#859399",
+                        "surface-container-highest": "#353437",
+                        "on-primary-fixed-variant": "#004e60",
+                        "surface-tint": "#47d6ff",
+                        "on-surface-variant": "#bbc9cf",
+                        "outline-variant": "#3c494e",
+                        "surface-dim": "#131315",
+                        "on-primary-container": "#00566a",
+                        "surface": "#131315",
+                        "secondary-container": "#00a572"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "mono-label": ["JetBrains Mono"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-sm": ["Geist"],
+                        "headline-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "mono-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "mono-data": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #0a0a0c; color: #e5e1e4; margin: 0; padding: 0; }
+        .tech-border { border: 1px solid rgba(255, 255, 255, 0.08); }
+        .active-glow { box-shadow: 0 0 8px rgba(0, 210, 255, 0.3); border-color: #00d2ff; }
+        .glass-panel { background-color: #16161a; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .overlay-panel { background-color: #1c1c21; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="bg-background text-on-background flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low docked left-0 h-full w-[240px] border-r border-outline-variant/20 flat no shadows flex flex-col h-screen py-gutter px-unit z-20 flex-shrink-0 hidden md:flex">
+<div class="px-3 py-4 mb-6">
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary font-bold tracking-tight">RetailSense OS</h1>
+<p class="font-mono-label text-mono-label text-on-surface-variant mt-1 uppercase">STORE #104</p>
+</div>
+<div class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 text-on-surface-variant dark:text-on-surface-variant font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 text-on-surface-variant dark:text-on-surface-variant font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+                Live Monitoring
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 text-on-surface-variant dark:text-on-surface-variant font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">database</span>
+                Database
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 bg-surface-container-high text-primary dark:text-primary font-bold border-r-2 border-primary rounded-l transition-colors duration-200 font-body-md text-body-md active-glow" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+                Configuration
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-200 text-on-surface-variant dark:text-on-surface-variant font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+                Analytics
+            </a>
+</div>
+<div class="mt-auto px-3 py-4 space-y-4">
+<div class="flex items-center justify-center py-2 px-3 bg-secondary/10 border border-secondary/30 rounded-full text-secondary font-mono-label text-mono-label">
+<span class="w-2 h-2 rounded-full bg-secondary mr-2 animate-pulse"></span>
+                Edge AI Active
+            </div>
+<div class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">sensors</span>
+                System Online
+            </div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface docked top-0 right-0 w-full border-b border-outline-variant/20 flat no shadows transition-all duration-200 flex justify-between items-center h-16 px-margin-desktop z-10 flex-shrink-0 hidden md:flex">
+<div class="flex items-center gap-6">
+<!-- Mobile menu toggle would go here -->
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined">store</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-gutter md:p-margin-desktop bg-[#0a0a0c]">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-on-background">Store Configuration</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Configure cameras, shelves, detection regions and operational rules.</p>
+</div>
+<!-- Tabs -->
+<div class="flex space-x-1 border-b border-outline-variant/20 mb-6 overflow-x-auto pb-px">
+<button class="px-4 py-2 font-mono-label text-mono-label text-primary border-b-2 border-primary">Camera Inputs</button>
+<button class="px-4 py-2 font-mono-label text-mono-label text-on-surface-variant hover:text-on-background transition-colors">Shelf Layout</button>
+<button class="px-4 py-2 font-mono-label text-mono-label text-on-surface-variant hover:text-on-background transition-colors">Checkout Lanes</button>
+<button class="px-4 py-2 font-mono-label text-mono-label text-on-surface-variant hover:text-on-background transition-colors">Detection Rules</button>
+<button class="px-4 py-2 font-mono-label text-mono-label text-on-surface-variant hover:text-on-background transition-colors">Alerts</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-220px)] min-h-[600px]">
+<!-- Left Panel: ROI Calibration Workspace -->
+<div class="lg:col-span-8 glass-panel rounded-lg flex flex-col overflow-hidden relative">
+<div class="p-3 border-b border-outline-variant/20 bg-surface-container flex justify-between items-center">
+<span class="font-mono-label text-mono-label uppercase tracking-wider text-on-background">ROI Calibration Workspace</span>
+<div class="flex gap-2">
+<span class="px-2 py-1 rounded bg-secondary/10 text-secondary font-mono-label text-xs">Live Feed Active</span>
+<span class="px-2 py-1 rounded bg-surface-bright text-on-surface-variant font-mono-label text-xs">1920x1080</span>
+</div>
+</div>
+<div class="flex-1 relative bg-black overflow-hidden group">
+<!-- Placeholder for Camera Feed -->
+<div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity" data-alt="A high-resolution, top-down security camera view of a modern retail store aisle. The lighting is bright and even, typical of a well-lit supermarket. The shelves are stocked with various packaged goods. The image has a slightly grainy, realistic CCTV aesthetic but remains very clear. The color palette emphasizes cool grays, sterile whites, and vibrant product packaging colors." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcGj8f1zPerZpkVaushLEsFjBk5AkCuF4MJ5P9UXmZpUr8uUj5EFsyL9feWsyEhDm-PiJTN7osiyeDFHXXINEZj_a8atnATzveturnmSpgVSQevyGu8zFOWyLNMPQStVlPVTGJvcy1zx00zwZkuJkLhjDICyCV-YZ_NesA34bI-MxhEF5aJ-AEL_ZvnLg3jdD27GSj7q2BsXD9hfzjloAeNUw7Um7c2m_FksWpdxWmVF6IUDg86y3U')"></div>
+<!-- Overlay Grids & UI -->
+<div class="absolute inset-0 bg-[linear-gradient(rgba(0,210,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,210,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+<!-- Draggable Regions (Simulated) -->
+<div class="absolute top-[20%] left-[10%] w-[150px] h-[300px] border-2 border-primary bg-primary/10 flex items-start justify-start p-1 cursor-move active-glow group-hover:border-primary-fixed-dim transition-colors">
+<span class="font-mono-label text-[10px] text-primary bg-black/50 px-1">Shelf A1</span>
+<!-- Resize handles -->
+<div class="absolute w-2 h-2 bg-primary -top-1 -left-1"></div>
+<div class="absolute w-2 h-2 bg-primary -top-1 -right-1"></div>
+<div class="absolute w-2 h-2 bg-primary -bottom-1 -left-1"></div>
+<div class="absolute w-2 h-2 bg-primary -bottom-1 -right-1"></div>
+</div>
+<div class="absolute top-[20%] left-[35%] w-[150px] h-[300px] border-2 border-secondary bg-secondary/10 flex items-start justify-start p-1 cursor-pointer hover:border-secondary-fixed transition-colors">
+<span class="font-mono-label text-[10px] text-secondary bg-black/50 px-1">Shelf A2</span>
+</div>
+<div class="absolute bottom-[10%] right-[15%] w-[200px] h-[100px] border-2 border-tertiary-container bg-tertiary-container/10 flex items-start justify-start p-1 cursor-pointer hover:border-tertiary transition-colors">
+<span class="font-mono-label text-[10px] text-tertiary-container bg-black/50 px-1">Register 1</span>
+</div>
+</div>
+<div class="p-3 border-t border-outline-variant/20 bg-surface-container flex gap-3">
+<button class="bg-primary text-on-primary font-mono-label px-4 py-2 rounded text-sm hover:bg-primary-fixed transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                            Add ROI Region
+                        </button>
+<button class="border border-outline-variant text-on-surface-variant font-mono-label px-4 py-2 rounded text-sm hover:bg-surface-bright transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">undo</span>
+                            Reset View
+                        </button>
+</div>
+</div>
+<!-- Right Panel: Region Details & Input Sources -->
+<div class="lg:col-span-4 flex flex-col gap-6 h-full overflow-y-auto pb-6">
+<!-- Selected Region Properties -->
+<div class="glass-panel rounded-lg p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-4 flex items-center gap-2 border-b border-outline-variant/20 pb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">edit_square</span>
+                            Selected Region
+                        </h3>
+<div class="space-y-4">
+<div>
+<label class="block font-mono-label text-mono-label text-on-surface-variant mb-1">Region Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-mono-data p-2 rounded focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="Shelf A1"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-mono-label text-mono-label text-on-surface-variant mb-1">Type</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-mono-data p-2 rounded focus:border-primary outline-none appearance-none">
+<option>Shelf</option>
+<option>Checkout</option>
+<option>Aisle</option>
+<option>Entrance</option>
+</select>
+</div>
+<div>
+<label class="block font-mono-label text-mono-label text-on-surface-variant mb-1">Target Capacity</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-mono-data p-2 rounded focus:border-primary outline-none text-right" type="number" value="100"/>
+</div>
+</div>
+<div>
+<label class="block font-mono-label text-mono-label text-on-surface-variant mb-1">Coordinates (X,Y,W,H)</label>
+<input class="w-full bg-surface-dim border border-outline-variant/50 text-on-surface-variant font-mono-data p-2 rounded opacity-70 cursor-not-allowed" readonly="" type="text" value="192, 216, 300, 600"/>
+</div>
+<div>
+<label class="block font-mono-label text-mono-label text-on-surface-variant mb-1">Alert Threshold (%)</label>
+<div class="flex items-center gap-3">
+<input class="flex-1 accent-primary" max="100" min="0" type="range" value="20"/>
+<span class="font-mono-data text-on-background w-8 text-right">20%</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20 flex justify-between gap-3">
+<button class="flex-1 border border-error text-error font-mono-label px-3 py-2 rounded hover:bg-error/10 transition-colors">Delete</button>
+<button class="flex-1 bg-primary text-on-primary font-mono-label px-3 py-2 rounded hover:bg-primary-fixed transition-colors">Save Details</button>
+</div>
+</div>
+</div>
+<!-- Input Sources -->
+<div class="glass-panel rounded-lg p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">router</span>
+                            Input Sources
+                        </h3>
+<div class="space-y-3">
+<!-- Primary Webcam -->
+<div class="border border-secondary/30 bg-secondary/5 rounded p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">photo_camera</span>
+</div>
+<div>
+<div class="font-body-sm text-on-background font-semibold">Primary Cam (Overhead)</div>
+<div class="font-mono-label text-[10px] text-secondary flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Connected • 30fps</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">settings</span></button>
+</div>
+<!-- RTSP Stream -->
+<div class="border border-outline-variant/30 bg-surface-container-lowest rounded p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">cast</span>
+</div>
+<div>
+<div class="font-body-sm text-on-background font-semibold">RTSP Stream (Aisle 4)</div>
+<div class="font-mono-label text-[10px] text-on-surface-variant">rtsp://192.168.1.55:554</div>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">settings</span></button>
+</div>
+<!-- Add Source Button -->
+<button class="w-full border border-dashed border-outline-variant/50 text-on-surface-variant font-mono-label py-2 rounded hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Add Source
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
